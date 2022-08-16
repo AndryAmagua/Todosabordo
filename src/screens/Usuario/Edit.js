@@ -22,14 +22,6 @@ const validationSchema = yup.object({
     correo: yup.string()
         .email('*Correo no valido')
         .required("*Correo Obligatorio"),
-    // contraseña: yup.string()
-    //     .min(4, "*Minimo 4 caracteres")
-    //     .required("*Contraseña obligatoria"),
-    // validacion: yup.string()
-    //     .required('*Vuelva a ingresar su contraseña')
-    //     .test("passwords-match", "*Los valores no coinciden", function (valor) {
-    //         return this.parent.contraseña == valor;
-    //     }),
     primera: yup.string()
         .required('*Respuesta de seguridad obligatoria'),
     segunda: yup.string()
@@ -52,7 +44,7 @@ const Edit = ({ navigation: { goBack }, route }) => {
                 body: JSON.stringify({
                     nombre: nombre,
                     celular: celular,
-                    correo: correo,
+                    correo: correo.toLowerCase(),
                     sector: sector,
                     respuestas: respuestas
                 })
@@ -75,14 +67,12 @@ const Edit = ({ navigation: { goBack }, route }) => {
                         initialValues={{
                             nombre: usuario.nombre, celular: usuario.celular, sector: usuario.sector,
                             correo: usuario.correo,
-                            // contraseña: usuario.contraseña, validacion: usuario.contraseña,
                             primera: usuario.respuestas[0], segunda: usuario.respuestas[1], tercera: usuario.respuestas[2]
                         }}
                         validationSchema={validationSchema}
                         onSubmit={(values) => {
-                            updateUsuario(values.nombre, values.celular, values.correo,
-                                // values.contraseña,
-                                values.sector, [values.primera, values.segunda, values.tercera])
+                            updateUsuario(values.nombre, values.celular, values.correo, values.sector,
+                                [values.primera.toLowerCase(), values.segunda.toLowerCase(), values.tercera.toLowerCase()])
                         }}
                     >
                         {(props) => (
@@ -131,27 +121,6 @@ const Edit = ({ navigation: { goBack }, route }) => {
                                     onBlur={props.handleBlur('correo')}
                                 />
                                 <Text style={styles.textError}>{props.touched.correo && props.errors.correo}</Text>
-
-                                {/* <TextInput
-                                    style={styles.input}
-                                    placeholderTextColor={'#000'}
-                                    placeholder='Contraseña'
-                                    secureTextEntry={true}
-                                    onChangeText={props.handleChange('contraseña')}
-                                    value={props.values.contraseña}
-                                    onBlur={props.handleBlur('contraseña')}
-                                />
-                                <Text style={styles.textError}>{props.touched.contraseña && props.errors.contraseña}</Text>
-                                <TextInput
-                                    style={styles.input}
-                                    placeholderTextColor={'#000'}
-                                    placeholder='Validar contraseña'
-                                    secureTextEntry={true}
-                                    onChangeText={props.handleChange('validacion')}
-                                    value={props.values.validacion}
-                                    onBlur={props.handleBlur('validacion')}
-                                />
-                                <Text style={styles.textError}>{props.touched.validacion && props.errors.validacion}</Text> */}
 
                                 <Text style={styles.text}>Preguntas de seguridad</Text>
                                 <TextInput
