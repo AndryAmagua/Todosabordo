@@ -38,7 +38,7 @@ const Eventos = () => {
                 style={styles.imagenEvento}
               />
               <Text style={styles.text}>{item.titulo}</Text>
-              <Text style={styles.textAlt}>{new Date(item.fecha).toLocaleDateString() + " - " + new Date(item.fecha).toLocaleTimeString()}</Text>
+              <Text style={styles.textAlt}>{new Date(item.fecha).toLocaleDateString() + " - " + new Date(item.fecha).toLocaleTimeString()+ "\nEn " + item.lugarID.titulo}</Text>
             </View>
           )}
         />
