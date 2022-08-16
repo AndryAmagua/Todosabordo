@@ -1,4 +1,4 @@
-import { StyleSheet, Button, View, SafeAreaView, ImageBackground, Text, Image } from 'react-native'
+import { StyleSheet, Button, SafeAreaView, ImageBackground, Text, Image, Alert } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -33,7 +33,12 @@ const Perfil = ({ route, navigation }) => {
         <Button
           title='Editar información'
           color={'#005CA8'}
-          onPress={() => navigation.navigate('Edit')}
+          onPress={() => navigation.navigate('Edit', { usuario: usuario, funcion: getData })}
+        />
+        <Button
+          title='Cambiar contraseña'
+          color={'#005CA8'}
+          onPress={() => navigation.navigate('EditContraseña')}
         />
         <Button
           title='Cerrar Sesion'
