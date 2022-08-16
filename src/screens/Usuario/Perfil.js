@@ -27,7 +27,7 @@ const Perfil = ({ route, navigation }) => {
     <SafeAreaView style={styles.container}>
       <ImageBackground source={require('../../assets/Fondo4.png')} style={styles.fondo}>
         <Image source={require('../../assets/User.png')} />
-        <Text style={styles.text}>{usuario.nombre}</Text>
+        <Text style={styles.text}>{usuario.nombre.toUpperCase()}</Text>
         <Text style={styles.text}>{usuario.correo}</Text>
         <Text style={styles.text}>{usuario.celular}</Text>
         <Button
@@ -38,7 +38,7 @@ const Perfil = ({ route, navigation }) => {
         <Button
           title='Cambiar contraseña'
           color={'#005CA8'}
-          onPress={() => navigation.navigate('EditContraseña')}
+          onPress={() => navigation.navigate('EditContraseña', { usuario: usuario })}
         />
         <Button
           title='Cerrar Sesion'

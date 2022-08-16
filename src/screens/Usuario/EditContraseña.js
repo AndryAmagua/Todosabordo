@@ -19,8 +19,8 @@ const validationSchema = yup.object({
         })
 })
 
-const EditContraseña = ({ navigation: { goBack } }) => {
-
+const EditContraseña = ({ navigation: { goBack }, route }) => {
+    const usuario = route.params.usuario
     const updateContraseña = async (contraseña) => {
         try {
             const response = await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/usuarios/' + usuario._id, {
@@ -36,7 +36,6 @@ const EditContraseña = ({ navigation: { goBack } }) => {
             AsyncStorage.removeItem('usuario')
             AsyncStorage.setItem('usuario', JSON.stringify(json))
             goBack()
-            getData()
         } catch (error) {
             console.error(error);
         }
