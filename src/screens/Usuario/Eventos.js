@@ -38,7 +38,7 @@ const Eventos = () => {
                 style={styles.imagenEvento}
               />
               <Text style={styles.text}>{item.titulo}</Text>
-              <Text style={styles.textAlt}>{new Date(item.fecha).toLocaleDateString() + " - " + new Date(item.fecha).toLocaleTimeString()+ "\nEn " + item.lugarID.titulo}</Text>
+              <Text style={styles.textAlt}>{new Date(item.fecha).toLocaleDateString() + " - " + new Date(item.fecha).toLocaleTimeString() + "\nEn " + item.lugarID.titulo}</Text>
             </View>
           )}
         />
@@ -70,11 +70,13 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 20,
     color: '#000',
-    marginTop: 15
+    marginTop: 15,
+    width: 250
   },
   textAlt: {
     color: '#000',
     marginTop: 5,
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
+    width: 250
   }
 })

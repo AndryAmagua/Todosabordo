@@ -25,7 +25,7 @@ const Lugares = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.container}>
             <ImageBackground source={require('../../assets/Fondo3.png')} resizeMode="cover" style={styles.fondoLugares}>
-                {isLoading ? <ActivityIndicator /> : (data.length == 0) ?
+                {isLoading ? <ActivityIndicator size="large" color="#fff"/> : (data.length == 0) ?
                     (
                         <Text style={{ color: 'white', textAlign: 'center' }}>No hay lugares que mostrar</Text>
                     ) : (
