@@ -8,26 +8,6 @@ import { Formik } from 'formik'
 import * as yup from 'yup'
 LogBox.ignoreAllLogs()
 
-// const K_OPTIONS = [
-//     {
-//         item: 'Gastronomía',
-//         id: 'Gastronomía',
-//     },
-//     {
-//         item: 'Hotelería',
-//         id: 'Hotelería',
-//     },
-//     {
-//         item: 'Aventura',
-//         id: 'Aventura',
-//     },
-//     {
-//         item: 'Diversión',
-//         id: 'Diversión',
-//     }
-// ]
-
-const K_OPTIONS = []
 const validationSchema = yup.object({
     titulo: yup.string()
         .required("Titulo de lugar obligatorio"),

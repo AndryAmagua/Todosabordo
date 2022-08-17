@@ -6,8 +6,10 @@ import React, { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 LogBox.ignoreAllLogs()
 
-const Lugar = ({ navigation: { goBack }, route }) => {
+const Lugar = ({ navigation: { goBack, navigate }, route }) => {
     const [data, setData] = useState([])
+    const [vista, setVista] = useState('Eventos')
+
     let lugar = route.params.lugar
 
     const getEventos = async () => {
@@ -72,26 +74,57 @@ const Lugar = ({ navigation: { goBack }, route }) => {
                 </Text>
                 <Text style={styles.texto1}>{lugar.contacto}</Text>
                 {/* Eventos-Promociones */}
-                <Text style={styles.texto2}>Eventos</Text>
-                <FlatList
-                    horizontal={true}
-                    data={data}
-                    keyExtractor={(item, index) => item._id}
-                    renderItem={({ item }) => (
-                        <View style={{
-                            backgroundColor: "beige",
-                            padding: 10,
-                            borderRadius: 5,
-                            marginVertical: 10
-                        }}>
-                            <Image
-                                source={{ uri: 'data:image/jpeg;base64,' + item.imagen }}
-                                style={styles.images}
-                            />
-                            <Text>{item.titulo}, {item.fecha}</Text>
-                        </View>
-                    )}
-                />
+                <View style={styles.buttonsContainer}>
+                    <Text onPress={() => setVista('Eventos')}
+                        style={vista == 'Eventos' ? styles.subtituloOn : styles.subtituloOff}>Eventos</Text>
+                    <Text onPress={() => setVista('Promociones')}
+                        style={vista == 'Promociones' ? styles.subtituloOn : styles.subtituloOff}>Promociones</Text>
+                </View>
+                {
+                    vista == 'Eventos' ? (
+                        <FlatList
+                            key={'listaEventos'}
+                            horizontal={true}
+                            data={data}
+                            keyExtractor={(item, index) => item._id}
+                            renderItem={({ item }) => (
+                                <View style={styles.card2}>
+                                    <Pressable
+                                        onPress={() => Alert.alert("+")}
+                                    >
+                                        <Image
+                                            source={{ uri: 'data:image/jpeg;base64,' + item.imagen }}
+                                            style={styles.imagenEvento}
+                                            resizeMode='stretch'
+                                        />
+                                    </Pressable>
+                                    <Text style={styles.texto2}>{item.titulo}</Text>
+                                </View>
+                            )}
+                        />
+                    ) : (
+                        <FlatList
+                            key={'listaPromociones'}
+                            numColumns={3}
+                            data={data}
+                            keyExtractor={(item, index) => item._id}
+                            renderItem={({ item }) => (
+                                <View style={styles.card2}>
+                                    <Pressable
+                                        onPress={() => navigate('ImagenPromocion', { uri: item.imagen })}
+                                    >
+                                        <Image
+                                            source={{ uri: 'data:image/jpeg;base64,' + item.imagen }}
+                                            style={styles.imagenPromocion}
+                                            resizeMode='stretch'
+                                        />
+                                    </Pressable>
+                                </View>
+                            )}
+                        />
+                    )
+                }
+
             </View>
         </ScrollView>
     )
@@ -103,11 +136,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#005CA8'
-    },
-    images: {
-        width: 150,
-        height: 150,
-        marginHorizontal: 3
     },
     portada: {
         width: "100%",
@@ -138,6 +166,16 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 25,
         paddingHorizontal: 20
     },
+    imagenEvento: {
+        width: 150,
+        height: 150,
+        borderRadius: 10,
+    },
+    imagenPromocion: {
+        width: '100%',
+        height: 150,
+        borderRadius: 10,
+    },
     titulo: {
         color: '#ffff',
         fontSize: 40,
@@ -148,11 +186,25 @@ const styles = StyleSheet.create({
         color: '#fff',
         textAlign: 'justify',
         marginVertical: 5,
-        //fontSize: 14
+    },
+    subtituloOn: {
+        color: '#fff',
+        textAlign: 'center',
+        backgroundColor: "#0c2e4a",
+        borderRadius: 10,
+        padding: 10
+    },
+    subtituloOff: {
+        color: '#fff',
+        textAlign: 'center',
+        borderRadius: 10,
+        padding: 10
     },
     texto2: {
         color: '#fff',
-        textAlign: 'center'
+        textAlign: 'center',
+        maxWidth: 150,
+        paddingHorizontal: 5
     },
     card: {
         backgroundColor: "#0c2e4a",
@@ -161,6 +213,16 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         marginHorizontal: 10,
         width: 'auto'
+    },
+    card2: {
+        flex: 1,
+        justifyContent: 'center',
+        margin: 5,
+    },
+    buttonsContainer: {
+        padding: 20,
+        flexDirection: 'row',
+        justifyContent: 'space-around'
     }
 
 })

@@ -49,7 +49,7 @@ const SignUp = ({ navigation: { goBack } }) => {
                 body: JSON.stringify({
                     nombre: nombre,
                     celular: celular,
-                    correo: correo,
+                    correo: correo.toLowerCase(),
                     contraseña: contraseña,
                     sector: sector,
                     respuestas: respuestas
@@ -78,7 +78,8 @@ const SignUp = ({ navigation: { goBack } }) => {
                         initialValues={{ nombre: '', celular: '', sector: '', correo: '', contraseña: '', validacion: '', primera: '', segunda: '', tercera: '' }}
                         validationSchema={validationSchema}
                         onSubmit={(values) => {
-                            onSignUp(values.nombre, values.celular, values.correo, values.contraseña, values.sector, [values.primera, values.segunda, values.tercera])
+                            onSignUp(values.nombre, values.celular, values.correo, values.contraseña, values.sector,
+                                [values.primera.toLowerCase(), values.segunda.toLowerCase(), values.tercera.toLowerCase()])
                         }}
                     >
                         {(props) => (
