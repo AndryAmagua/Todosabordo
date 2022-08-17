@@ -43,6 +43,7 @@ const Lugares = ({ navigation }) => {
                                         <Image
                                             source={{ uri: 'data:image/jpeg;base64,' + item.imagenPerfil }}
                                             style={styles.imagenLugar}
+                                            resizeMode='stretch'
                                         />
                                     </Pressable>
                                     <Text style={styles.text}>{item.titulo}</Text>
@@ -63,7 +64,7 @@ const styles = StyleSheet.create({
     },
     fondoLugares: {
         flex: 1,
-        paddingTop: 75,
+        paddingTop: 75
     },
     card: {
         flex: 1,
@@ -73,7 +74,6 @@ const styles = StyleSheet.create({
     imagenLugar: {
         width: "100%",
         height: 200,
-        resizeMode: 'cover',
         borderRadius: 10,
     },
     text: {
