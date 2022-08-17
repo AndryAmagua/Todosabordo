@@ -28,7 +28,7 @@ const SigIn = (props) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          correo: correo,
+          correo: correo.toLowerCase(),
           contraseña: contraseña,
         })
       });
