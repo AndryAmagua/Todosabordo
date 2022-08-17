@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   fondoFavoritos: {
     flex: 1,
     resizeMode: 'cover', 
-    paddingTop: 55
+    paddingTop: 75
   },
   card: {
     flex: 1,
