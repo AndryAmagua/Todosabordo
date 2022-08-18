@@ -31,12 +31,14 @@ const Eventos = () => {
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           keyExtractor={(item, index) => item._id}
+          
           renderItem={({ item }) => (
             <View style={styles.card}>
               <Image
-                source={{ uri: 'data:image/jpeg;base64,' + item.imagen }}
+                source={{ uri: item.imagen }}
                 style={styles.imagenEvento}
               />
+              
               <Text style={styles.text}>{item.titulo}</Text>
               <Text style={styles.textAlt}>{new Date(item.fecha).toLocaleDateString() + " - " + new Date(item.fecha).toLocaleTimeString() + "\nEn " + item.lugarID.titulo}</Text>
             </View>

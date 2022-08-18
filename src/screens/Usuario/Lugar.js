@@ -93,7 +93,7 @@ const Lugar = ({ navigation: { goBack, navigate }, route }) => {
                                         onPress={() => Alert.alert("+")}
                                     >
                                         <Image
-                                            source={{ uri: 'data:image/jpeg;base64,' + item.imagen }}
+                                            source={{ uri: item.imagen }}
                                             style={styles.imagenEvento}
                                             resizeMode='stretch'
                                         />
@@ -114,7 +114,7 @@ const Lugar = ({ navigation: { goBack, navigate }, route }) => {
                                         onPress={() => navigate('ImagenPromocion', { uri: item.imagen })}
                                     >
                                         <Image
-                                            source={{ uri: 'data:image/jpeg;base64,' + item.imagen }}
+                                            source={{ uri: item.imagen }}
                                             style={styles.imagenPromocion}
                                             resizeMode='stretch'
                                         />

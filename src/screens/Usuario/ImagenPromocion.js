@@ -6,7 +6,7 @@ const ImagenPromocion = ({ navigation: { goBack }, route }) => {
     return (
         <View style={styles.container}>
             <ImageBackground
-                source={{ uri: 'data:image/jpeg;base64,' + uri }}
+                source={{ uri: uri }}
                 style={styles.imagenPromocion}
                 resizeMode='stretch'
             >
