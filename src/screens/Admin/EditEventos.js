@@ -20,7 +20,6 @@ const EditEventos = ({ navigation, route }) => {
     const [imagen, setImagen] = useState(route.params.evento.imagen);
     const [dataLugares, setDataLugares] = useState([]);
     const [date, setDate] = useState(route.params.evento.fecha)
-
     const [modalVisible, setModalVisible] = useState(false)
     const [openDate, setOpenDate] = useState(false)
 
@@ -31,8 +30,6 @@ const EditEventos = ({ navigation, route }) => {
             setDataLugares(json);
         } catch (error) {
             console.error(error);
-        } finally {
-            setLoading(false);
         }
     }
 
@@ -70,7 +67,6 @@ const EditEventos = ({ navigation, route }) => {
 
     function mostrarFecha() {
         if (date != "") {
-            console.log(date)
             return <Text>{date.toString()}</Text>
         } else {
             return <Text>Aqui va la fecha</Text>
@@ -137,9 +133,10 @@ const EditEventos = ({ navigation, route }) => {
     function renderFileUri() {
         if (imagen) {
             return <Image
-                source={{ uri: 'data:image/jpeg;base64,' + imagen }}
+                source={{ uri: imagen }}
                 style={styles.images}
             />
+
         } else {
             return <Image source={{ uri: 'https://pbs.twimg.com/profile_images/486929358120964097/gNLINY67_400x400.png' }}
                 style={styles.images}

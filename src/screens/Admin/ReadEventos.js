@@ -17,6 +17,8 @@ const validationSchema = yup.object({
 })
 
 const Eventos = ({ navigation }) => {
+  const [photo, setPhoto] = useState()
+  const [url, setUrl] = useState()
   const [isLoading, setLoading] = useState(true);
   const [dataEventos, setDataEventos] = useState([]);
   const [dataLugares, setDataLugares] = useState([]);
@@ -24,19 +26,16 @@ const Eventos = ({ navigation }) => {
 
   const [date, setDate] = useState(new Date())
   const [openDate, setOpenDate] = useState(false)
-  const [imagen, setImagen] = useState('');
+  const [imagen, setImagen] = useState();
 
   const launchCamera = () => {
     let options = {
       title: 'Take Picture',
       storageOptions: {
         skipBackup: true,
-        path: 'images',
-
+        path: 'images'
       },
-      includeBase64: true,
-      maxWidth: 500,
-      maxHeight: 500,
+      includeExtra: true,
       quality: 0.5
     };
     ImagePicker.launchCamera(options, (response) => {
@@ -45,7 +44,14 @@ const Eventos = ({ navigation }) => {
       } else if (response.errorCode) {
         console.log('ImagePicker Error: ', response.errorMessage);
       } else {
-        setImagen(response.assets[0].base64)
+        const uri = response.assets[0].uri
+        const source = {
+          uri: response.assets[0].uri,
+          type: response.assets[0].type,
+          name: response.assets[0].fileName
+        }
+        setPhoto(source)
+        setImagen(uri)
       }
     });
   }
@@ -58,9 +64,7 @@ const Eventos = ({ navigation }) => {
         path: 'images',
 
       },
-      includeBase64: true,
-      maxWidth: 500,
-      maxHeight: 500,
+      includeExtra: true,
       quality: 0.5
     };
     ImagePicker.launchImageLibrary(options, (response) => {
@@ -69,7 +73,15 @@ const Eventos = ({ navigation }) => {
       } else if (response.errorCode) {
         console.log('ImagePicker Error: ', response.errorMessage);
       } else {
-        setImagen(response.assets[0].base64)
+        const uri = response.assets[0].uri
+        console.log(response)
+        const file = {
+          uri: response.assets[0].uri,
+          type: response.assets[0].type,
+          name: response.assets[0].fileName
+        }
+        formData.append('myFile', file)
+        setImagen(uri)
       }
     });
 
@@ -78,7 +90,7 @@ const Eventos = ({ navigation }) => {
   function renderFileUri() {
     if (imagen) {
       return <Image
-        source={{ uri: 'data:image/jpeg;base64,' + imagen }}
+        source={{ uri: imagen }}
         style={styles.images}
       />
     } else {
@@ -113,28 +125,40 @@ const Eventos = ({ navigation }) => {
 
   const createEvento = async (titulo, lugarID) => {
     try {
+      const data = new FormData();
+      data.append('file', photo)
+      data.append('upload_preset', 'todosabordo')
+      data.append("cloud_name", "todosabordo")
+      await fetch("https://api.cloudinary.com/v1_1/todosabordo/upload", {
+        method: "post",
+        body: data
+      }).then(res => res.json()).
+        then(data => {
+          console.log("------->\n" + data.secure_url)
+          setUrl(data.secure_url)
+          console.log(url)
+        }).catch(err => {
+          Alert.alert("An Error Occured While Uploading")
+        })
+
       const response = await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/eventos', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           titulo: titulo,
-          imagen: imagen,
+          imagen: url,
           fecha: date,
-          lugarID: lugarID,
+          lugarID: lugarID
         })
       });
       const json = await response.json();
-      if (json.ok == false) {
-        Alert.alert("Aviso", "No se pudo crear el evento")
-      } else {
-        Alert.alert("Aviso", json.message)
-        setModalVisible(!modalVisible)
-        setImagen('')
-        getEventosLugares()
-      }
-
+      Alert.alert("Ok", json.message)
+      setModalVisible(!modalVisible)
+      setImagen('')
+      getEventosLugares()
     } catch (error) {
       console.error(error);
     }
@@ -274,6 +298,5 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     borderWidth: 1,
     marginHorizontal: 3,
-    resizeMode: 'stretch'
   }
 });

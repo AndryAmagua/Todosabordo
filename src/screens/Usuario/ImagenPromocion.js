@@ -6,7 +6,7 @@ const ImagenPromocion = ({ navigation: { goBack }, route }) => {
     return (
         <View style={styles.container}>
             <ImageBackground
-                source={{ uri: 'data:image/jpeg;base64,' + uri }}
+                source={{ uri: uri }}
                 style={styles.imagenPromocion}
                 resizeMode='stretch'
             >
@@ -25,14 +25,15 @@ const styles = StyleSheet.create({
         flex: 1
     },
     imagenPromocion: {
-        flex:1,
+        flex: 1,
         alignItems: 'flex-end',
-        justifyContent:'flex-end'
+        justifyContent: 'flex-end'
     },
     iconBack: {
         width: 50,
         height: 50,
         marginHorizontal: 25,
-        marginBottom: 25
+        marginBottom: 25,
+        tintColor: 'white' || 'black'
     },
 })

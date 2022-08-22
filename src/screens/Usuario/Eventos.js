@@ -34,8 +34,9 @@ const Eventos = () => {
           renderItem={({ item }) => (
             <View style={styles.card}>
               <Image
-                source={{ uri: 'data:image/jpeg;base64,' + item.imagen }}
+                source={{ uri: item.imagen }}
                 style={styles.imagenEvento}
+                resizeMode={'stretch'}
               />
               <Text style={styles.text}>{item.titulo}</Text>
               <Text style={styles.textAlt}>{new Date(item.fecha).toLocaleDateString() + " - " + new Date(item.fecha).toLocaleTimeString() + "\nEn " + item.lugarID.titulo}</Text>
@@ -64,7 +65,6 @@ const styles = StyleSheet.create({
   imagenEvento: {
     width: 250,
     height: "65%",
-    resizeMode: 'cover',
     borderRadius: 10,
   },
   text: {
