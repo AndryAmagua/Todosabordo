@@ -24,6 +24,8 @@ const validationSchema = yup.object({
         .required("Valoración obligatoria")
 })
 
+const K_OPTIONS = []
+
 const ReadLugares = ({ navigation }) => {
     const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState([]);
@@ -147,6 +149,7 @@ const ReadLugares = ({ navigation }) => {
                     valoracion: valoracion,
                 })
             });
+            console.log(response)
             const json = await response.json();
             if (json.ok == false) {
                 Alert.alert("Aviso", json.message)

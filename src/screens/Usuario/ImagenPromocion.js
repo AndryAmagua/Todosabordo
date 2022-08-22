@@ -25,14 +25,15 @@ const styles = StyleSheet.create({
         flex: 1
     },
     imagenPromocion: {
-        flex:1,
+        flex: 1,
         alignItems: 'flex-end',
-        justifyContent:'flex-end'
+        justifyContent: 'flex-end'
     },
     iconBack: {
         width: 50,
         height: 50,
         marginHorizontal: 25,
-        marginBottom: 25
+        marginBottom: 25,
+        tintColor: 'white' || 'black'
     },
 })

@@ -37,6 +37,7 @@ const Eventos = () => {
               <Image
                 source={{ uri: item.imagen }}
                 style={styles.imagenEvento}
+                resizeMode={'stretch'}
               />
               
               <Text style={styles.text}>{item.titulo}</Text>
@@ -66,7 +67,6 @@ const styles = StyleSheet.create({
   imagenEvento: {
     width: 250,
     height: "65%",
-    resizeMode: 'cover',
     borderRadius: 10,
   },
   text: {

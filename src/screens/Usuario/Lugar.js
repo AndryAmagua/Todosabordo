@@ -90,12 +90,12 @@ const Lugar = ({ navigation: { goBack, navigate }, route }) => {
                             renderItem={({ item }) => (
                                 <View style={styles.card2}>
                                     <Pressable
-                                        onPress={() => Alert.alert("+")}
+                                        onPress={() => navigate('Evento', { uri: item.imagen })}
                                     >
                                         <Image
                                             source={{ uri: item.imagen }}
                                             style={styles.imagenEvento}
-                                            resizeMode='stretch'
+                                            resizeMode='cover'
                                         />
                                     </Pressable>
                                     <Text style={styles.texto2}>{item.titulo}</Text>
@@ -109,14 +109,14 @@ const Lugar = ({ navigation: { goBack, navigate }, route }) => {
                             data={data}
                             keyExtractor={(item, index) => item._id}
                             renderItem={({ item }) => (
-                                <View style={styles.card2}>
+                                <View style={styles.card3}>
                                     <Pressable
                                         onPress={() => navigate('ImagenPromocion', { uri: item.imagen })}
                                     >
                                         <Image
                                             source={{ uri: item.imagen }}
                                             style={styles.imagenPromocion}
-                                            resizeMode='stretch'
+                                            resizeMode='cover'
                                         />
                                     </Pressable>
                                 </View>
@@ -157,7 +157,8 @@ const styles = StyleSheet.create({
         height: 50,
         resizeMode: 'cover',
         marginHorizontal: 15,
-        marginBottom: 60
+        marginBottom: 60,
+        tintColor: 'white' || 'black'
     },
     informacion: {
         marginTop: -50,
@@ -202,7 +203,6 @@ const styles = StyleSheet.create({
     },
     texto2: {
         color: '#fff',
-        textAlign: 'center',
         maxWidth: 150,
         paddingHorizontal: 5
     },
@@ -216,6 +216,12 @@ const styles = StyleSheet.create({
     },
     card2: {
         flex: 1,
+        justifyContent: 'center',
+        margin: 5,
+    },
+    card3: {
+        flex: 1,
+        maxWidth: '33%',
         justifyContent: 'center',
         margin: 5,
     },

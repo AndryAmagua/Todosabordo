@@ -6,6 +6,7 @@ LogBox.ignoreAllLogs()
 import Lugares from '../../screens/Usuario/Lugares'
 import Lugar from '../../screens/Usuario/Lugar'
 import ImagenPromocion from '../../screens/Usuario/ImagenPromocion'
+import Evento from '../../screens/Usuario/Evento'
 
 const Stack = createNativeStackNavigator()
 
@@ -15,6 +16,7 @@ const StackLugar = () => {
             <Stack.Screen name="Lugares" component={Lugares} />
             <Stack.Screen name="Lugar" component={Lugar} />
             <Stack.Screen name="ImagenPromocion" component={ImagenPromocion} />
+            <Stack.Screen name="Evento" component={Evento} />
         </Stack.Navigator>
     )
 }
