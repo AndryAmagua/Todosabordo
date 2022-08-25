@@ -23,7 +23,7 @@ const EditContraseña = ({ navigation: { goBack }, route }) => {
     const usuario = route.params.usuario
     const updateContraseña = async (contraseña) => {
         try {
-            const response = await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/usuarios/' + usuario._id, {
+            const response = await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/usuarios/contraseña/' + usuario._id, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

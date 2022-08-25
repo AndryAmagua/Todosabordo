@@ -5,7 +5,7 @@ LogBox.ignoreAllLogs()
 
 import StackLugar from './StackLugar'
 import Eventos from '../../screens/Usuario/Eventos'
-import Favoritos from '../../screens/Usuario/Favoritos'
+import StackFavoritos from './StackFavoritos'
 import StackPerfil from './StackPerfil'
 
 const Tab = createBottomTabNavigator()
@@ -27,7 +27,7 @@ const TabUsuario = (props) => {
                 tabBarIcon: ({ focused }) => (<Image source={require("../../assets/iconoEventos.png")}
                     style={{ tintColor: focused ? '#FFCB00' : 'white', width: 20, height: 20 }} />)
             }} />
-            <Tab.Screen name="Favoritos" component={Favoritos} options={{
+            <Tab.Screen name="StackFavoritos" component={StackFavoritos} options={{
                 tabBarIcon: ({ focused }) => (<Image source={require("../../assets/iconoFavoritos.png")}
                     style={{ tintColor: focused ? '#FFCB00' : 'white', width: 20, height: 20 }} />)
             }} />

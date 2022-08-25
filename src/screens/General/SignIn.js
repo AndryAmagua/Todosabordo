@@ -48,8 +48,8 @@ const SigIn = (props) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ImageBackground source={require('../../assets/Fondo2.jpg')} resizeMode="cover" style={styles.image}>
-        <View style={styles.containerImage}>
+      <ImageBackground source={require('../../assets/Fondo2.jpg')} resizeMode="cover" style={styles.imageBackground}>
+        <View style={styles.containerLogo}>
           <Image source={require('../../assets/Logo.png')} />
         </View>
         <View style={styles.containerControls}>
@@ -69,7 +69,7 @@ const SigIn = (props) => {
                     value={props.values.correo}
                     onBlur={props.handleBlur('correo')}
                   />
-                  <Text style={styles.textError}>{props.touched.correo && props.errors.correo}</Text>
+                  <Text style={styles.errorText}>{props.touched.correo && props.errors.correo}</Text>
                   <TextInput
                     style={styles.input}
                     placeholder='Contraseña'
@@ -79,10 +79,13 @@ const SigIn = (props) => {
                     value={props.values.contraseña}
                     onBlur={props.handleBlur('contraseña')}
                   />
-                  <Text style={styles.textError}>{props.touched.contraseña && props.errors.contraseña}</Text>
-                  <Text style={styles.textoBlanco} onPress={() => navegacion.navigate('Recover-Password')}>*Olvide mi contraseña</Text>
+                  <Text style={styles.errorText}>{props.touched.contraseña && props.errors.contraseña}</Text>
+                  <View style={{alignItems:'flex-end'}}>
+                    <Text style={styles.whiteText} onPress={() => navegacion.navigate('Recover-Password')}>*Olvide mi contraseña</Text>
+                  </View>
+
                   <Pressable style={styles.button} onPress={props.handleSubmit}>
-                    <Text style={styles.text3}>INGRESAR</Text>
+                    <Text style={styles.buttonText}>INGRESAR</Text>
                   </Pressable>
                 </View>
               )}
@@ -90,8 +93,8 @@ const SigIn = (props) => {
           </ScrollView>
         </View>
         <View style={styles.containerText}>
-          <Text style={styles.textoBlanco}>No eres miembro?  </Text>
-          <Text style={styles.text2} onPress={() => props.navigation.navigate('Sign-Up')}>  Crear una cuenta</Text>
+          <Text style={styles.whiteText}>No eres miembro?  </Text>
+          <Text style={styles.yellowText} onPress={() => props.navigation.navigate('Sign-Up')}>  Crear una cuenta</Text>
         </View>
       </ImageBackground >
 
@@ -103,10 +106,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1
   },
-  image: {
+  imageBackground: {
     flex: 1
   },
-  containerImage: {
+  containerLogo: {
     flex: 3,
     justifyContent: 'center',
     alignItems: 'center'
@@ -122,20 +125,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  textoBlanco: {
+  whiteText: {
     color: "#ffff",
-    textAlign: "right",
+    margin: 5
   },
-  text2: {
+  yellowText: {
     color: "#FFCB00"
   },
-  text3: {
+  buttonText: {
     color: "#000",
     textAlign: "center",
     fontWeight: 'bold',
     fontSize: 15
   },
-  textError: {
+  errorText: {
     color: "#ffff",
     textAlign: "center",
     marginVertical: 5,

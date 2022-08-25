@@ -68,9 +68,9 @@ const SignUp = ({ navigation: { goBack } }) => {
     }
 
     return (
-        <ImageBackground source={require('../../assets/Fondo2.jpg')} resizeMode="cover" style={styles.image}>
+        <ImageBackground source={require('../../assets/Fondo2.jpg')} resizeMode="cover" style={styles.container}>
             <ScrollView>
-                <View style={styles.containerImage}>
+                <View style={styles.containerLogo}>
                     <Image source={require('../../assets/Logo.png')} />
                 </View>
                 <View style={styles.containerControls}>
@@ -149,7 +149,7 @@ const SignUp = ({ navigation: { goBack } }) => {
                                 />
                                 <Text style={styles.textError}>{props.touched.validacion && props.errors.validacion}</Text>
 
-                                <Text style={styles.text}>Preguntas de seguridad</Text>
+                                <Text style={styles.subtitle}>Preguntas de seguridad</Text>
                                 <TextInput
                                     style={styles.input}
                                     placeholderTextColor={'white'}
@@ -180,7 +180,7 @@ const SignUp = ({ navigation: { goBack } }) => {
                                 />
                                 <Text style={styles.textError}>{props.touched.tercera && props.errors.tercera}</Text>
                                 <Pressable style={styles.button} onPress={props.handleSubmit}>
-                                    <Text style={styles.text3}>REGISTRARSE</Text>
+                                    <Text style={styles.buttonText}>REGISTRARSE</Text>
                                 </Pressable>
 
                             </View>
@@ -188,7 +188,7 @@ const SignUp = ({ navigation: { goBack } }) => {
                     </Formik>
                 </View>
                 <View style={styles.containerText}>
-                    <Text style={styles.text2} onPress={() => goBack()}>Ya tengo una cuenta</Text>
+                    <Text style={styles.yellowText} onPress={() => goBack()}>Ya tengo una cuenta</Text>
                 </View>
             </ScrollView>
         </ImageBackground>
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1
     },
-    containerImage: {
+    containerLogo: {
         justifyContent: 'center',
         alignItems: 'center',
         paddingVertical: 30
@@ -213,19 +213,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 40
     },
-    image: {
-        flex: 1
-    },
-    text: {
+    subtitle: {
         color: "#ffff",
         textAlign: 'center',
         marginVertical: 10
     },
-    text2: {
+    yellowText: {
         color: "#FFCB00",
         textAlign: 'center'
     },
-    text3: {
+    buttonText: {
         color: "#000",
         textAlign: "center",
         fontWeight: 'bold',

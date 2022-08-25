@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View, FlatList, Image, Button, SafeAreaView, Alert, ImageBackground } from 'react-native'
+import { StyleSheet, Text, View, FlatList, Image, Pressable, SafeAreaView, Alert, ImageBackground } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const Favoritos = () => {
+const Favoritos = ({ navigation }) => {
   const [data, setData] = useState([]);
   const [isFetching, setIsFetching] = useState(false)
 
@@ -40,7 +40,7 @@ const Favoritos = () => {
       });
       const json = await response.json()
       if (json) {
-        Alert.alert("Aviso", "Lugar elminado de favoritos")
+        Alert.alert("Aviso", "Elminado de favoritos")
       } else {
         Alert.alert("Aviso", "No se pudo eliminar de favoritos")
       }
@@ -64,13 +64,19 @@ const Favoritos = () => {
           keyExtractor={(item, index) => item._id}
           renderItem={({ item }) => (
             <View style={styles.card}>
-              <Image
-                source={{ uri: 'data:image/jpeg;base64,' + item.imagenPerfil }}
-                style={styles.imagenFavortio}
-              />
-              <Text style={styles.text}>{item.titulo}</Text>
-              {/* <Text>{item.descripcion}</Text> */}
-              <Button title='Eliminar' color='red' onPress={() => eliminarFavorito(item._id)} />
+              <Pressable onPress={() => navigation.navigate('Lugar', { lugar: item })}>
+                <Image
+                  source={{ uri: item.imagenPerfil }}
+                  style={styles.imagenFavortio}
+                  resizeMode='cover'
+                />
+              </Pressable>
+              <View style={styles.rowView}>
+                <Text style={styles.text}>{item.titulo}</Text>
+                <Pressable onPress={() => eliminarFavorito(item._id)}>
+                  <Image style={styles.iconElm} source={require('../../assets/iconoEliminar.png')} resizeMode={'stretch'} />
+                </Pressable>
+              </View>
             </View>
           )}
         />
@@ -87,25 +93,37 @@ const styles = StyleSheet.create({
   },
   fondoFavoritos: {
     flex: 1,
-    resizeMode: 'cover', 
+    resizeMode: 'cover',
     paddingTop: 75
   },
   card: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     marginHorizontal: 35,
     marginVertical: 10
+  },
+  rowView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    width: '100%',
+    backgroundColor: '#005CA8',
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10
   },
   imagenFavortio: {
     width: '100%',
     height: 175,
-    resizeMode: 'cover',
-    borderRadius: 10,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
   text: {
+    maxWidth: '50%',
     fontSize: 20,
-    color: 'black',
+    color: '#fff',
     marginVertical: 10
-  }
+  },
+  iconElm: {
+    width: 30,
+    height: 30,
+  },
 })

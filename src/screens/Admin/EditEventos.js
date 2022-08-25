@@ -15,10 +15,12 @@ const validationSchema = yup.object({
         .required("Seleccione el lugar al que pertenece el evento")
 })
 
-const EditEventos = ({ navigation, route }) => {
-    const [id, setId] = useState(route.params.evento._id);
-    const [imagen, setImagen] = useState(route.params.evento.imagen);
-    const [dataLugares, setDataLugares] = useState([]);
+const EditEventos = ({ navigation: { goBack }, route }) => {
+    const [photo, setPhoto] = useState()
+
+    const [id, setId] = useState(route.params.evento._id)
+    const [imagen, setImagen] = useState(route.params.evento.imagen)
+    const [dataLugares, setDataLugares] = useState([])
     const [date, setDate] = useState(route.params.evento.fecha)
     const [modalVisible, setModalVisible] = useState(false)
     const [openDate, setOpenDate] = useState(false)
@@ -33,26 +35,38 @@ const EditEventos = ({ navigation, route }) => {
         }
     }
 
-    function editarEvento(nuevoTitulo, nuevoLugarID,) {
-        fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/eventos/' + id, {
+    const editarEvento = async (nuevoTitulo, nuevoLugarID,) => {
+        const data = new FormData();
+        var url = ""
+        data.append('file', photo)
+        data.append('upload_preset', 'todosabordo')
+        data.append("cloud_name", "todosabordo")
+        const res = await fetch("https://api.cloudinary.com/v1_1/todosabordo/upload", {
+            method: "post",
+            body: data
+        })
+        const value = await res.json()
+        url = value.secure_url
+
+        await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/eventos/' + id, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 titulo: nuevoTitulo,
-                imagen: imagen,
+                imagen: url,
                 fecha: date,
                 lugarID: nuevoLugarID,
             })
         }).then(() => {
             Alert.alert("Titulo", "Evento Editado")
             route.params.funcion()
-            navigation.navigate("ReadEventos")
+            goBack()
         })
     }
 
-    function eliminarEvento() {
+    const eliminarEvento = async () => {
         fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/eventos/' + id, {
             method: 'DELETE',
             headers: {
@@ -66,8 +80,9 @@ const EditEventos = ({ navigation, route }) => {
     }
 
     function mostrarFecha() {
+        const fecha = new Date(date)
         if (date != "") {
-            return <Text>{date.toString()}</Text>
+            return <Text>{fecha.toLocaleDateString() + " - " + fecha.toLocaleTimeString()}</Text>
         } else {
             return <Text>Aqui va la fecha</Text>
         }
@@ -89,9 +104,7 @@ const EditEventos = ({ navigation, route }) => {
                 path: 'images',
 
             },
-            includeBase64: true,
-            maxWidth: 500,
-            maxHeight: 500,
+            includeExtra: true,
             quality: 0.5
         };
         ImagePicker.launchCamera(options, (response) => {
@@ -100,7 +113,14 @@ const EditEventos = ({ navigation, route }) => {
             } else if (response.errorCode) {
                 console.log('ImagePicker Error: ', response.errorMessage);
             } else {
-                setImagen(response.assets[0].base64)
+                const uri = response.assets[0].uri
+                const source = {
+                    uri: response.assets[0].uri,
+                    type: response.assets[0].type,
+                    name: response.assets[0].fileName
+                }
+                setPhoto(source)
+                setImagen(uri)
             }
         });
     }
@@ -113,9 +133,7 @@ const EditEventos = ({ navigation, route }) => {
                 path: 'images',
 
             },
-            includeBase64: true,
-            maxWidth: 500,
-            maxHeight: 500,
+            includeExtra: true,
             quality: 0.5
         };
         ImagePicker.launchImageLibrary(options, (response) => {
@@ -124,7 +142,14 @@ const EditEventos = ({ navigation, route }) => {
             } else if (response.errorCode) {
                 console.log('ImagePicker Error: ', response.errorMessage);
             } else {
-                setImagen(response.assets[0].base64)
+                const uri = response.assets[0].uri
+                const source = {
+                    uri: response.assets[0].uri,
+                    type: response.assets[0].type,
+                    name: response.assets[0].fileName
+                }
+                setPhoto(source)
+                setImagen(uri)
             }
         });
 
@@ -154,7 +179,6 @@ const EditEventos = ({ navigation, route }) => {
                 animationType="slide"
                 transparent={false}
                 visible={modalVisible}
-                style={{ padding: 20 }}
                 onRequestClose={() => {
                     setModalVisible(false);
                 }}
@@ -206,7 +230,6 @@ const EditEventos = ({ navigation, route }) => {
                                 mode={"datetime"}
                                 onConfirm={(date) => {
                                     setOpenDate(false)
-                                    // setDate(date.toLocaleDateString() + " - " + date.toLocaleTimeString().substr(0, 5))
                                     setDate(date)
                                 }}
                                 onCancel={() => {

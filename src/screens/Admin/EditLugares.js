@@ -16,19 +16,31 @@ const validationSchema = yup.object({
         .required("Link de dirección obligatorio"),
     contacto: yup.string()
         .max(10, "Maximo 10 números")
-        .required("Número de contacto obligatorio"),
-    valoracion: yup.string()
-        .required("Valoración obligatoria")
+        .required("Número de contacto obligatorio")
 })
 
-const EditLugares = ({ navigation, route }) => {
+const EditLugares = ({ navigation: { goBack }, route }) => {
+    const [photo, setPhoto] = useState()
+
     const [id, setId] = useState(route.params.lugar._id);
     const [imagen, setImagen] = useState(route.params.lugar.imagenPerfil);
     const [servicio, setServicio] = useState(route.params.lugar.servicio);
     const [modalVisible, setModalVisible] = useState(false)
 
-    function editarLugar(nuevoTitulo, nuevaDescripcion, nuevaUbicacionTitulo, nuevaUbicacionLink, nuevoContacto, nuevaValoracion) {
-        fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/lugares/' + id, {
+    const editarLugar = async (nuevoTitulo, nuevaDescripcion, nuevaUbicacionTitulo, nuevaUbicacionLink, nuevoContacto) => {
+        const data = new FormData();
+        var url = ""
+        data.append('file', photo)
+        data.append('upload_preset', 'todosabordo')
+        data.append("cloud_name", "todosabordo")
+        const res = await fetch("https://api.cloudinary.com/v1_1/todosabordo/upload", {
+            method: "post",
+            body: data
+        })
+        const value = await res.json()
+        url = value.secure_url
+
+        await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/lugares/' + id, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -36,21 +48,20 @@ const EditLugares = ({ navigation, route }) => {
             body: JSON.stringify({
                 titulo: nuevoTitulo,
                 descripcion: nuevaDescripcion,
-                imagenPerfil: imagen,
+                imagenPerfil: url,
                 ubicacionTitulo: nuevaUbicacionTitulo,
                 ubicacionLink: nuevaUbicacionLink,
                 contacto: nuevoContacto,
                 servicio: servicio,
-                valoracion: nuevaValoracion,
             })
         }).then(() => {
             Alert.alert("Titulo", "Lugar Editado")
             route.params.funcion()
-            navigation.navigate("ReadLugares")
+            goBack()
         })
     }
 
-    function eliminarLugar() {
+    const eliminarLugar = async () => {
         fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/lugares/' + id, {
             method: 'DELETE',
             headers: {
@@ -59,7 +70,7 @@ const EditLugares = ({ navigation, route }) => {
         }).then(() => {
             Alert.alert("Aviso", "Lugar Eliminado")
             route.params.funcion()
-            navigation.navigate("ReadLugares")
+            goBack()
         })
     }
 
@@ -79,9 +90,7 @@ const EditLugares = ({ navigation, route }) => {
                 path: 'images',
 
             },
-            includeBase64: true,
-            maxWidth: 500,
-            maxHeight: 500,
+            includeExtra: true,
             quality: 0.5
         };
         ImagePicker.launchCamera(options, (response) => {
@@ -90,7 +99,14 @@ const EditLugares = ({ navigation, route }) => {
             } else if (response.errorCode) {
                 console.log('ImagePicker Error: ', response.errorMessage);
             } else {
-                setImagen(response.assets[0].base64)
+                const uri = response.assets[0].uri
+                const source = {
+                    uri: response.assets[0].uri,
+                    type: response.assets[0].type,
+                    name: response.assets[0].fileName
+                }
+                setPhoto(source)
+                setImagen(uri)
             }
         });
     }
@@ -103,9 +119,7 @@ const EditLugares = ({ navigation, route }) => {
                 path: 'images',
 
             },
-            includeBase64: true,
-            maxWidth: 500,
-            maxHeight: 500,
+            includeExtra: true,
             quality: 0.5
         };
         ImagePicker.launchImageLibrary(options, (response) => {
@@ -114,7 +128,14 @@ const EditLugares = ({ navigation, route }) => {
             } else if (response.errorCode) {
                 console.log('ImagePicker Error: ', response.errorMessage);
             } else {
-                setImagen(response.assets[0].base64)
+                const uri = response.assets[0].uri
+                const source = {
+                    uri: response.assets[0].uri,
+                    type: response.assets[0].type,
+                    name: response.assets[0].fileName
+                }
+                setPhoto(source)
+                setImagen(uri)
             }
         });
 
@@ -136,7 +157,7 @@ const EditLugares = ({ navigation, route }) => {
                 <Button title='No' color='blue' onPress={cancelar} />
             </Modal>
             <ScrollView>
-                <Button title='Regresar' color='grey' onPress={() => navigation.navigate("ReadLugares")} />
+                <Button title='Regresar' color='grey' onPress={() => goBack()} />
                 <Formik
                     initialValues={{
                         titulo: route.params.lugar.titulo,
@@ -144,11 +165,10 @@ const EditLugares = ({ navigation, route }) => {
                         ubicacionTitulo: route.params.lugar.ubicacionTitulo,
                         ubicacionLink: route.params.lugar.ubicacionLink,
                         contacto: route.params.lugar.contacto,
-                        valoracion: route.params.lugar.valoracion
                     }}
                     validationSchema={validationSchema}
                     onSubmit={(values) => {
-                        editarLugar(values.titulo, values.descripcion, values.ubicacionTitulo, values.ubicacionLink, values.contacto, values.valoracion)
+                        editarLugar(values.titulo, values.descripcion, values.ubicacionTitulo, values.ubicacionLink, values.contacto)
                     }}
                 >
                     {(props) => (
@@ -171,7 +191,7 @@ const EditLugares = ({ navigation, route }) => {
                             <Text >Imagen de Portada</Text>
                             <View>
                                 <Image
-                                    source={{ uri: 'data:image/jpeg;base64,' + imagen }}
+                                    source={{ uri: imagen }}
                                     style={styles.images}
                                 />
                             </View>
@@ -217,13 +237,6 @@ const EditLugares = ({ navigation, route }) => {
                                     </View>
                                 )}
                             />
-                            <TextInput
-                                placeholder='Valoración'
-                                onChangeText={props.handleChange('valoracion')}
-                                value={props.values.valoracion}
-                                onBlur={props.handleBlur('valoracion')}
-                            />
-                            <Text>{props.touched.valoracion && props.errors.valoracion}</Text>
                             <Button title='Editar' color='blue' onPress={props.handleSubmit} />
                         </View>
                     )}
