@@ -10,9 +10,7 @@ import StackCategoria from './StackCategoria'
 const Drawer = createDrawerNavigator()
 
 const DrawerUsuario = (props) => {
-    const [categorias, setCategorias] = useState([]);
-    const [userData, setUserData] = useState({})
-    console.log({ menu: props })
+    const [categorias, setCategorias] = useState([])
 
     const getCategorias = async () => {
         try {
@@ -24,12 +22,6 @@ const DrawerUsuario = (props) => {
         }
     }
 
-    const getUsuario = async () => {
-        const user = JSON.parse(await AsyncStorage.getItem('usuario'));
-        console.log(user)
-        setUserData(user)
-    }
-
     function CustomDrawerContent(props) {
         return (
             <View style={styles.container}>
@@ -38,8 +30,6 @@ const DrawerUsuario = (props) => {
                 >
                     <ImageBackground source={require('../../assets/Fondo4.png')} resizeMode='cover' style={styles.header} >
                         <Image source={require('../../assets/Logo.png')} resizeMode='contain' style={styles.image} />
-                        <Text style={styles.text}>{userData.nombre}</Text>
-                        <Text style={styles.text}>{userData.correo}</Text>
                     </ImageBackground>
                     <DrawerItemList {...props} />
                 </DrawerContentScrollView>
@@ -49,7 +39,6 @@ const DrawerUsuario = (props) => {
 
     useEffect(() => {
         getCategorias()
-        getUsuario()
     }, [])
 
     return (

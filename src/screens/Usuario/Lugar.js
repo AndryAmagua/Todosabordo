@@ -48,7 +48,7 @@ const Lugar = ({ navigation: { goBack, navigate }, route }) => {
 
     return (
         <ScrollView style={styles.container}>
-            <ImageBackground source={{ uri: 'data:image/jpeg;base64,' + lugar.imagenPerfil }} style={styles.portada}>
+            <ImageBackground source={{ uri: lugar.imagenPerfil }} style={styles.portada}>
                 <Pressable onPress={() => goBack()}>
                     <Image style={styles.iconBack} source={require('../../assets/back.png')} />
                 </Pressable>
@@ -90,7 +90,7 @@ const Lugar = ({ navigation: { goBack, navigate }, route }) => {
                             renderItem={({ item }) => (
                                 <View style={styles.card2}>
                                     <Pressable
-                                        onPress={() => navigate('Evento', { uri: item.imagen })}
+                                        onPress={() => navigate('Evento', { evento: item })}
                                     >
                                         <Image
                                             source={{ uri: item.imagen }}

@@ -1,5 +1,6 @@
-import { View, Text, TextInput, Button, Alert, Modal, StyleSheet, ImageBackground, Image } from 'react-native'
+import { View, Text, TextInput, Button, Alert, Modal, StyleSheet, ImageBackground, Image, Pressable } from 'react-native'
 import React, { useState } from 'react'
+import Clipboard from '@react-native-clipboard/clipboard';
 import { Formik } from 'formik'
 import * as yup from 'yup'
 
@@ -26,11 +27,11 @@ const RecoverPassword = ({ navigation: { goBack } }) => {
         try {
             const response = await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/usuarios/recover/' + correo);
             const json = await response.json();
-            if (json[0] != null) {
-                setData(json[0])
+            if (json.ok == true) {
+                setData(json)
                 setModalVisible(true)
             } else {
-                Alert.alert("Aviso", "No existe un usuario creado con este correo")
+                Alert.alert("Aviso", json.message)
             }
         } catch (error) {
             console.error(error);
@@ -52,8 +53,21 @@ const RecoverPassword = ({ navigation: { goBack } }) => {
                         initialValues={{ primera: '', segunda: '', tercera: '' }}
                         validationSchema={validationModal}
                         onSubmit={(values) => {
-                            if (data.respuestas[0] == values.primera && data.respuestas[1] == values.segunda && data.respuestas[2] == values.tercera) {
-                                Alert.alert("Su contrseña es: ", data.contraseña)
+                            if (data.respuestas[0] == values.primera.toLowerCase() && data.respuestas[1] == values.segunda.toLowerCase() && data.respuestas[2] == values.tercera.toLowerCase()) {
+                                Alert.alert(
+                                    "Su contrseña es:",
+                                    data.contraseña,
+                                    [
+                                        {
+                                            text: "Copiar Contraseña",
+                                            onPress: () => Clipboard.setString(data.contraseña),
+                                            style: "ok",
+                                        },
+                                    ],
+                                    {
+                                        cancelable: true,
+                                    }
+                                )
                                 setModalVisible(false)
                             } else {
                                 Alert.alert("Aviso", "Las respuestas no coinciden")
@@ -87,20 +101,24 @@ const RecoverPassword = ({ navigation: { goBack } }) => {
                                 />
                                 <Text style={styles.textError}>{props.touched.tercera && props.errors.tercera}</Text>
 
-                                <Button title='Enviar' color='blue' onPress={props.handleSubmit} />
+                                <Pressable style={styles.button} onPress={props.handleSubmit}>
+                                    <Text style={styles.buttonText}>COMPROBAR</Text>
+                                </Pressable>
                             </View>
                         )}
                     </Formik>
-                    <Button title='cancelar' color='red' onPress={() => {
-                        setModalVisible(false)
-                    }} />
+                    <View style={{ alignItems: 'center' }}>
+                        <Text style={styles.cancelText} onPress={() => {
+                            setModalVisible(false)
+                        }}>Cancelar</Text>
+                    </View>
                 </ImageBackground>
             </Modal>
 
             <Formik
                 initialValues={{ correo: '' }}
                 validationSchema={validationSchema}
-                onSubmit={(values) => { getUsuario(values.correo) }}
+                onSubmit={(values) => { getUsuario(values.correo.toLowerCase()) }}
             >
                 {(props) => (
                     <View>
@@ -116,11 +134,16 @@ const RecoverPassword = ({ navigation: { goBack } }) => {
                             onBlur={props.handleBlur('correo')}
                         />
                         <Text style={styles.textError}>{props.touched.correo && props.errors.correo}</Text>
-                        <Button title='enviar' color='blue' onPress={props.handleSubmit} />
+                        <Pressable style={styles.button} onPress={props.handleSubmit}>
+                            <Text style={styles.buttonText}>ENVIAR</Text>
+                        </Pressable>
                     </View>
                 )}
             </Formik>
-            <Button title='regresar' color='grey' onPress={() => goBack()} />
+            <View style={{ alignItems: 'center' }}>
+                <Text style={styles.whiteText} onPress={() => goBack()}>Regresar</Text>
+            </View>
+
         </ImageBackground>
     )
 }
@@ -156,5 +179,31 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginVertical: 5,
         fontStyle: 'italic'
-    }
+    },
+    whiteText: {
+        color: "#fff",
+        margin: 50,
+        fontSize: 15
+    },
+    cancelText: {
+        color: 'red',
+        fontWeight: 'bold',
+        fontSize: 15,
+        margin: 15
+    },
+    buttonText: {
+        color: "#000",
+        textAlign: "center",
+        fontWeight: 'bold',
+        fontSize: 15
+    },
+    button: {
+        backgroundColor: "#FFCB00",
+        width: '50%',
+        height: 'auto',
+        alignSelf: 'center',
+        padding: 12,
+        marginTop: 20,
+        borderRadius: 10
+    },
 })

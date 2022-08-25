@@ -9,7 +9,7 @@ import SigIn from './src/screens/General/SignIn'
 import SignUp from './src/screens/General/SignUp'
 import RecoverPassword from './src/screens/General/RecoverPassword'
 import Usuario from './src/navigators/Usuario/DrawerUsuario'
-import Admin from './src/screens/Admin/Inicio'
+import Admin from './src/navigators/Admin/DrawerAdmin'
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
 

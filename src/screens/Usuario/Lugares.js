@@ -25,7 +25,7 @@ const Lugares = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.container}>
             <ImageBackground source={require('../../assets/Fondo3.png')} resizeMode="cover" style={styles.fondoLugares}>
-                {isLoading ? <ActivityIndicator size="large" color="#fff"/> : (data.length == 0) ?
+                {isLoading ? <ActivityIndicator size="large" color="#fff" /> : (data.length == 0) ?
                     (
                         <Text style={{ color: 'white', textAlign: 'center' }}>No hay lugares que mostrar</Text>
                     ) : (
@@ -41,7 +41,7 @@ const Lugares = ({ navigation }) => {
                                         onPress={() => navigation.navigate('Lugar', { lugar: item })}
                                     >
                                         <Image
-                                            source={{ uri: 'data:image/jpeg;base64,' + item.imagenPerfil }}
+                                            source={{ uri: item.imagenPerfil }}
                                             style={styles.imagenLugar}
                                             resizeMode='stretch'
                                         />

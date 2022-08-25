@@ -1,4 +1,4 @@
-import { StyleSheet, Button, SafeAreaView, ImageBackground, Text, Image, Alert } from 'react-native'
+import { StyleSheet, Pressable, SafeAreaView, ImageBackground, Text, Image } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -30,21 +30,15 @@ const Perfil = ({ route, navigation }) => {
         <Text style={styles.text}>{usuario.nombre.toUpperCase()}</Text>
         <Text style={styles.text}>{usuario.correo}</Text>
         <Text style={styles.text}>{usuario.celular}</Text>
-        <Button
-          title='Editar información'
-          color={'#005CA8'}
-          onPress={() => navigation.navigate('Edit', { usuario: usuario, funcion: getData })}
-        />
-        <Button
-          title='Cambiar contraseña'
-          color={'#005CA8'}
-          onPress={() => navigation.navigate('EditContraseña', { usuario: usuario })}
-        />
-        <Button
-          title='Cerrar Sesion'
-          color={'#005CA8'}
-          onPress={() => logout()}
-        />
+        <Pressable style={styles.button} onPress={() => navigation.navigate('Edit', { usuario: usuario, funcion: getData })}>
+          <Text style={styles.buttonText}>EDITAR INFORMACIÓN</Text>
+        </Pressable>
+        <Pressable style={styles.button} onPress={() => navigation.navigate('EditContraseña', { usuario: usuario })}>
+          <Text style={styles.buttonText}>CAMBIAR CONTRASEÑA</Text>
+        </Pressable>
+        <Pressable style={styles.button} onPress={() => logout()}>
+          <Text style={styles.buttonText}>CERRAR SESIÓN</Text>
+        </Pressable>
       </ImageBackground>
     </SafeAreaView>
   )
@@ -65,5 +59,18 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#000',
-  }
+  },
+  buttonText: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: 15,
+    fontWeight: 'bold'
+  },
+  button: {
+    backgroundColor: "#005CA8",
+    width: 'auto',
+    height: 'auto',
+    padding: 12,
+    borderRadius: 10
+  },
 })
