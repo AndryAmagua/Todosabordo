@@ -1,8 +1,8 @@
 import {
-    View, Text, TextInput, LogBox,
-    ImageBackground, StyleSheet, Pressable
+    View, Text, TextInput, LogBox, Image, Modal, ActivityIndicator,
+    ImageBackground, StyleSheet, Pressable, Alert
 } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { Formik } from 'formik'
 import * as yup from 'yup'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -21,8 +21,12 @@ const validationSchema = yup.object({
 
 const EditContraseña = ({ navigation: { goBack }, route }) => {
     const usuario = route.params.usuario
+    const [security, setSecurity] = useState(true)
+    const [modalVisible, setModalVisible] = useState(false)
+
     const updateContraseña = async (contraseña) => {
         try {
+            setModalVisible(true)
             const response = await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/usuarios/contrasena/' + usuario._id, {
                 method: 'PUT',
                 headers: {
@@ -37,12 +41,36 @@ const EditContraseña = ({ navigation: { goBack }, route }) => {
             AsyncStorage.setItem('usuario', JSON.stringify(json))
             goBack()
         } catch (error) {
-            console.error(error);
+            Alert.alert("Error", error.message)
+        } finally {
+            setModalVisible(false)
         }
     }
 
     return (
         <ImageBackground source={require('../../assets/Fondo4.png')} resizeMode="cover" style={styles.container}>
+            <Modal
+                animationType='fade'
+                transparent={true}
+                visible={modalVisible}
+            >
+                <View style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: '#00000099'
+                }}>
+                    <View style={{
+                        backgroundColor: "white",
+                        borderRadius: 20,
+                        padding: 35,
+                        alignItems: "center"
+                    }}>
+                        <ActivityIndicator size="large" color="#005CA8" />
+                        <Text>ACTUALIZANDO...</Text>
+                    </View>
+                </View>
+            </Modal>
             <View style={styles.containerControls}>
                 <Formik
                     initialValues={{ contraseña: '', validacion: '' }}
@@ -51,15 +79,20 @@ const EditContraseña = ({ navigation: { goBack }, route }) => {
                 >
                     {(props) => (
                         <View>
-                            <TextInput
-                                style={styles.input}
-                                placeholderTextColor={'#000'}
-                                placeholder='Nueva contraseña'
-                                secureTextEntry={true}
-                                onChangeText={props.handleChange('contraseña')}
-                                value={props.values.contraseña}
-                                onBlur={props.handleBlur('contraseña')}
-                            />
+                            <View style={styles.viewPassword}>
+                                <TextInput
+                                    style={{ flex: 1, color: '#000' }}
+                                    placeholderTextColor={'#000'}
+                                    placeholder='Nueva contraseña'
+                                    secureTextEntry={security}
+                                    onChangeText={props.handleChange('contraseña')}
+                                    value={props.values.contraseña}
+                                    onBlur={props.handleBlur('contraseña')}
+                                />
+                                <Pressable onPress={() => setSecurity(!security)}>
+                                    <Image source={require('../../assets/showPassword.png')} style={styles.icon} resizeMode={'contain'} />
+                                </Pressable>
+                            </View>
                             <Text style={styles.textError}>{props.touched.contraseña && props.errors.contraseña}</Text>
                             <TextInput
                                 style={styles.input}
@@ -128,5 +161,21 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderColor: '#000',
         color: '#000'
+    },
+    icon: {
+        tintColor: '#000',
+        height: 25,
+        width: 25,
+        padding: 10,
+        margin: 5
+    },
+    viewPassword: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        borderWidth: 2,
+        borderRadius: 10,
+        borderColor: '#000',
+        paddingHorizontal: 10
     }
 })

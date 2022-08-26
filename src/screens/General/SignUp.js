@@ -1,8 +1,8 @@
 import {
     View, Text, Image, TextInput, LogBox, ScrollView, Alert,
-    ImageBackground, StyleSheet, Pressable
+    ImageBackground, StyleSheet, Pressable, Modal, ActivityIndicator
 } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { Formik } from 'formik'
 import * as yup from 'yup'
 import { Picker } from '@react-native-picker/picker'
@@ -38,9 +38,12 @@ const validationSchema = yup.object({
 })
 
 const SignUp = ({ navigation: { goBack } }) => {
+    const [security, setSecurity] = useState(true)
+    const [modalVisible, setModalVisible] = useState(false)
 
     const onSignUp = async (nombre, celular, correo, contraseña, sector, respuestas) => {
         try {
+            setModalVisible(true)
             const response = await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/usuarios', {
                 method: 'POST',
                 headers: {
@@ -63,12 +66,39 @@ const SignUp = ({ navigation: { goBack } }) => {
                 Alert.alert("Aviso", json.message)
             }
         } catch (error) {
-            console.error(error);
+            Alert.alert("Error", error.message);
+        } finally {
+            setModalVisible(false)
         }
     }
 
     return (
         <ImageBackground source={require('../../assets/Fondo2.jpg')} resizeMode="cover" style={styles.container}>
+            <Modal
+                animationType='fade'
+                transparent={true}
+                visible={modalVisible}
+            // onRequestClose={() => {
+            //     setModalVisible(false);
+            // }}
+            >
+                <View style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: '#00000099'
+                }}>
+                    <View style={{
+                        backgroundColor: "white",
+                        borderRadius: 20,
+                        padding: 35,
+                        alignItems: "center"
+                    }}>
+                        <ActivityIndicator size="large" color="#005CA8" />
+                        <Text>ESPERE UN MOMENTO POR FAVOR</Text>
+                    </View>
+                </View>
+            </Modal>
             <ScrollView>
                 <View style={styles.containerLogo}>
                     <Image source={require('../../assets/Logo.png')} />
@@ -128,15 +158,20 @@ const SignUp = ({ navigation: { goBack } }) => {
                                     onBlur={props.handleBlur('correo')}
                                 />
                                 <Text style={styles.textError}>{props.touched.correo && props.errors.correo}</Text>
-                                <TextInput
-                                    style={styles.input}
-                                    placeholderTextColor={'white'}
-                                    placeholder='Contraseña'
-                                    secureTextEntry={true}
-                                    onChangeText={props.handleChange('contraseña')}
-                                    value={props.values.contraseña}
-                                    onBlur={props.handleBlur('contraseña')}
-                                />
+                                <View style={styles.viewPassword}>
+                                    <TextInput
+                                        style={{ flex: 1, color: 'white' }}
+                                        placeholderTextColor={'white'}
+                                        placeholder='Contraseña'
+                                        secureTextEntry={security}
+                                        onChangeText={props.handleChange('contraseña')}
+                                        value={props.values.contraseña}
+                                        onBlur={props.handleBlur('contraseña')}
+                                    />
+                                    <Pressable onPress={() => setSecurity(!security)}>
+                                        <Image source={require('../../assets/showPassword.png')} style={styles.icon} resizeMode={'contain'} />
+                                    </Pressable>
+                                </View>
                                 <Text style={styles.textError}>{props.touched.contraseña && props.errors.contraseña}</Text>
                                 <TextInput
                                     style={styles.input}
@@ -250,6 +285,22 @@ const styles = StyleSheet.create({
         borderColor: 'white',
         color: 'white',
         placeholderTextColor: 'white'
+    },
+    icon: {
+        tintColor: '#fff',
+        height: 25,
+        width: 25,
+        padding: 10,
+        margin: 5
+    },
+    viewPassword: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        borderWidth: 2,
+        borderRadius: 10,
+        borderColor: 'white',
+        paddingHorizontal: 10
     }
 })
 

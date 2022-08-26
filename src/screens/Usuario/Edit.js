@@ -1,8 +1,8 @@
 import {
-    View, Text, TextInput, LogBox, ScrollView, Alert,
+    View, Text, TextInput, LogBox, ScrollView, Alert, Modal, ActivityIndicator,
     ImageBackground, StyleSheet, Pressable
 } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Formik } from 'formik'
 import * as yup from 'yup'
 import { Picker } from '@react-native-picker/picker'
@@ -33,9 +33,11 @@ const validationSchema = yup.object({
 const Edit = ({ navigation: { goBack }, route }) => {
     const usuario = route.params.usuario
     const getData = route.params.funcion
+    const [modalVisible, setModalVisible] = useState(false)
 
     const updateUsuario = async (nombre, celular, correo, sector, respuestas) => {
         try {
+            setModalVisible(true)
             const response = await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/usuarios/' + usuario._id, {
                 method: 'PUT',
                 headers: {
@@ -55,12 +57,36 @@ const Edit = ({ navigation: { goBack }, route }) => {
             goBack()
             getData()
         } catch (error) {
-            console.error(error);
+            Alert.alert("Error", error.message);
+        } finally {
+            setModalVisible(false)
         }
     }
 
     return (
         <ImageBackground source={require('../../assets/Fondo4.png')} resizeMode="cover" style={styles.container}>
+            <Modal
+                animationType='fade'
+                transparent={true}
+                visible={modalVisible}
+            >
+                <View style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: '#00000099'
+                }}>
+                    <View style={{
+                        backgroundColor: "white",
+                        borderRadius: 20,
+                        padding: 35,
+                        alignItems: "center"
+                    }}>
+                        <ActivityIndicator size="large" color="#005CA8" />
+                        <Text>ACTUALIZANDO...</Text>
+                    </View>
+                </View>
+            </Modal>
             <ScrollView>
                 <View style={styles.containerControls}>
                     <Formik

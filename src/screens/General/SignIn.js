@@ -1,8 +1,8 @@
 import {
-  View, Text, StyleSheet, TextInput, LogBox,
-  Image, Alert, ImageBackground, Pressable, SafeAreaView, ScrollView
+  View, Text, StyleSheet, TextInput, LogBox, ActivityIndicator,
+  Image, Alert, ImageBackground, Pressable, SafeAreaView, ScrollView, Modal
 } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { Formik } from 'formik'
 import * as yup from 'yup'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -18,10 +18,13 @@ const validationSchema = yup.object({
 })
 
 const SigIn = (props) => {
-
+  const [modalVisible, setModalVisible] = useState(false)
+  const [security, setSecurity] = useState(true)
   const navegacion = props.navigation
+
   const onSignIn = async (correo, contraseña) => {
     try {
+      setModalVisible(true)
       const response = await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/login', {
         method: 'POST',
         headers: {
@@ -42,12 +45,39 @@ const SigIn = (props) => {
         Alert.alert("Aviso", json.message)
       }
     } catch (error) {
-      console.error(error);
+      Alert.alert("Error", error.message);
+    } finally {
+      setModalVisible(false)
     }
   }
 
   return (
     <SafeAreaView style={styles.container}>
+      <Modal
+        animationType='fade'
+        transparent={true}
+        visible={modalVisible}
+      // onRequestClose={() => {
+      //     setModalVisible(false);
+      // }}
+      >
+        <View style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: '#00000099'
+        }}>
+          <View style={{
+            backgroundColor: "white",
+            borderRadius: 20,
+            padding: 35,
+            alignItems: "center"
+          }}>
+            <ActivityIndicator size="large" color="#005CA8" />
+            <Text>INGRESANDO...</Text>
+          </View>
+        </View>
+      </Modal>
       <ImageBackground source={require('../../assets/Fondo2.jpg')} resizeMode="cover" style={styles.imageBackground}>
         <View style={styles.containerLogo}>
           <Image source={require('../../assets/Logo.png')} />
@@ -70,17 +100,22 @@ const SigIn = (props) => {
                     onBlur={props.handleBlur('correo')}
                   />
                   <Text style={styles.errorText}>{props.touched.correo && props.errors.correo}</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder='Contraseña'
-                    placeholderTextColor={'white'}
-                    secureTextEntry={true}
-                    onChangeText={props.handleChange('contraseña')}
-                    value={props.values.contraseña}
-                    onBlur={props.handleBlur('contraseña')}
-                  />
+                  <View style={styles.viewPassword}>
+                    <TextInput
+                      style={{ flex: 1, color: 'white'}}
+                      placeholder='Contraseña'
+                      placeholderTextColor={'white'}
+                      secureTextEntry={security}
+                      onChangeText={props.handleChange('contraseña')}
+                      value={props.values.contraseña}
+                      onBlur={props.handleBlur('contraseña')}
+                    />
+                    <Pressable onPress={() => setSecurity(!security)}>
+                      <Image source={require('../../assets/showPassword.png')} style={styles.icon} resizeMode={'contain'} />
+                    </Pressable>
+                  </View>
                   <Text style={styles.errorText}>{props.touched.contraseña && props.errors.contraseña}</Text>
-                  <View style={{alignItems:'flex-end'}}>
+                  <View style={{ alignItems: 'flex-end' }}>
                     <Text style={styles.whiteText} onPress={() => navegacion.navigate('Recover-Password')}>*Olvide mi contraseña</Text>
                   </View>
 
@@ -160,6 +195,22 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     color: 'white',
     placeholderTextColor: 'white'
+  },
+  icon: {
+    tintColor: '#fff',
+    height: 25,
+    width: 25,
+    padding: 10,
+    margin: 5
+  },
+  viewPassword: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderRadius: 10,
+    borderColor: 'white',
+    paddingHorizontal: 10
   }
 })
 
