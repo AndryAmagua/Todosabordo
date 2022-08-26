@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, View, Pressable, TextInput, StyleSheet, Image, Alert, Button } from 'react-native';
+import {
+  ScrollView, Text, View, TextInput, StyleSheet, Image, Alert, Button,
+  Modal, ActivityIndicator
+} from 'react-native';
 import * as ImagePicker from 'react-native-image-picker'
 import SelectBox from 'react-native-multi-selectbox'
 import { xorBy } from 'lodash'
@@ -22,15 +25,14 @@ const validationSchema = yup.object({
     .required("Número de contacto obligatorio")
 })
 
-var K_OPTIONS = []
-
 const CreateLugares = ({ navigation: { goBack }, route }) => {
+  const [K_OPTIONS, setK_OPTIONS] = useState([])
   const getLugares = route.params.funcion
   const [photo, setPhoto] = useState()
 
   const [imagen, setImagen] = useState('')
   const [categorias, setCategorias] = useState([])
-
+  const [modalVisible, setModalVisible] = useState(false)
 
   const launchCamera = () => {
     let options = {
@@ -42,7 +44,7 @@ const CreateLugares = ({ navigation: { goBack }, route }) => {
       },
       includeExtra: true,
       quality: 0.5
-    };
+    }
     ImagePicker.launchCamera(options, (response) => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
@@ -58,7 +60,7 @@ const CreateLugares = ({ navigation: { goBack }, route }) => {
         setPhoto(source)
         setImagen(uri)
       }
-    });
+    })
   }
 
   const launchImageLibrary = () => {
@@ -71,7 +73,7 @@ const CreateLugares = ({ navigation: { goBack }, route }) => {
       },
       includeExtra: true,
       quality: 0.5
-    };
+    }
     ImagePicker.launchImageLibrary(options, (response) => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
@@ -87,7 +89,7 @@ const CreateLugares = ({ navigation: { goBack }, route }) => {
         setPhoto(source)
         setImagen(uri)
       }
-    });
+    })
 
   }
 
@@ -106,17 +108,19 @@ const CreateLugares = ({ navigation: { goBack }, route }) => {
 
   const getCategorias = async () => {
     try {
-      if (K_OPTIONS.length == 0) {
+      const arrayCategorias = []
+      if (arrayCategorias.length == 0) {
         const response = await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/categorias');
         const json = await response.json();
         json.map((item) => {
-          K_OPTIONS.push({
+          arrayCategorias.push({
             item: item.nombre,
             id: item.nombre
           })
         })
+        setK_OPTIONS(arrayCategorias)
+        console.log(K_OPTIONS)
       }
-
     } catch (error) {
       console.error(error);
     }
@@ -128,6 +132,7 @@ const CreateLugares = ({ navigation: { goBack }, route }) => {
 
   const createLugares = async (titulo, descripcion, ubicacionTitulo, ubicacionLink, servicio, contacto) => {
     try {
+      setModalVisible(true)
       const data = new FormData();
       var url = ""
       data.append('file', photo)
@@ -166,9 +171,10 @@ const CreateLugares = ({ navigation: { goBack }, route }) => {
         getLugares()
         goBack()
       }
-
     } catch (error) {
-      console.error(error);
+      Alert.alert(error.message)
+    } finally {
+      setModalVisible(false)
     }
   }
 
@@ -178,6 +184,31 @@ const CreateLugares = ({ navigation: { goBack }, route }) => {
 
   return (
     <View style={{ flex: 1 }}>
+      <Modal
+        animationType='fade'
+        transparent={true}
+        visible={modalVisible}
+      // onRequestClose={() => {
+      //     setModalVisible(false);
+      // }}
+      >
+        <View style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: '#00000099'
+        }}>
+          <View style={{
+            backgroundColor: "white",
+            borderRadius: 20,
+            padding: 35,
+            alignItems: "center"
+          }}>
+            <ActivityIndicator size="large" color="#005CA8" />
+            <Text>CARGANDO...</Text>
+          </View>
+        </View>
+      </Modal>
       <ScrollView>
         <Formik
           initialValues={{ titulo: '', descripcion: '', ubicacionTitulo: '', ubicacionLink: '', contacto: '' }}

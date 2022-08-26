@@ -6,7 +6,9 @@ LogBox.ignoreAllLogs()
 import StackEventos from './StackEventos'
 import StackLugares from './StackLugares'
 import StackCategorias from './StackCategorias'
+import StackPromociones from './StackPromociones'
 import Ajustes from '../../screens/Admin/Ajustes'
+import Usuarios from '../../screens/Admin/Usuarios'
 
 const Drawer = createDrawerNavigator();
 
@@ -31,6 +33,8 @@ const DrawerAdmin = (props) => {
             <Drawer.Screen name="Lugares" component={StackLugares} />
             <Drawer.Screen name="Eventos" component={StackEventos} />
             <Drawer.Screen name="Categorias" component={StackCategorias} />
+            <Drawer.Screen name="Promociones" component={StackPromociones} />
+            <Drawer.Screen name="Usuarios" component={Usuarios} />
             <Drawer.Screen name="Ajustes" component={Ajustes} initialParams={{ funcion: props.funcion }} />
         </Drawer.Navigator>
     )

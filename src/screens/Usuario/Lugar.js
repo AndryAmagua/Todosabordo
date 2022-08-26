@@ -8,17 +8,22 @@ LogBox.ignoreAllLogs()
 
 const Lugar = ({ navigation: { goBack, navigate }, route }) => {
     const [data, setData] = useState([])
+    const [promos, setPromos] = useState([])
     const [vista, setVista] = useState('Eventos')
 
     let lugar = route.params.lugar
 
-    const getEventos = async () => {
+    const getEventosPromociones = async () => {
         try {
             const response = await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/eventos/' + lugar._id)
             const json = await response.json()
             setData(json)
         } catch (error) {
             console.error(error)
+        } finally {
+            const response = await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/promociones/' + lugar._id)
+            const json = await response.json()
+            setPromos(json)
         }
     }
 
@@ -43,8 +48,8 @@ const Lugar = ({ navigation: { goBack, navigate }, route }) => {
 
 
     useEffect(() => {
-        getEventos();
-    }, []);
+        getEventosPromociones()
+    }, [])
 
     return (
         <ScrollView style={styles.container}>
@@ -106,7 +111,7 @@ const Lugar = ({ navigation: { goBack, navigate }, route }) => {
                         <FlatList
                             key={'listaPromociones'}
                             numColumns={3}
-                            data={data}
+                            data={promos}
                             keyExtractor={(item, index) => item._id}
                             renderItem={({ item }) => (
                                 <View style={styles.card3}>
@@ -204,7 +209,8 @@ const styles = StyleSheet.create({
     texto2: {
         color: '#fff',
         maxWidth: 150,
-        paddingHorizontal: 5
+        paddingHorizontal: 5,
+        paddingVertical: 10
     },
     card: {
         backgroundColor: "#0c2e4a",

@@ -3,13 +3,13 @@ import { ActivityIndicator, FlatList, Text, View, Pressable, StyleSheet, Button,
 import { LogBox } from 'react-native'
 LogBox.ignoreAllLogs()
 
-const ReadLugares = ({ navigation }) => {
+const ReadPromociones = ({ navigation }) => {
     const [isLoading, setLoading] = useState(true);
     const [data, setData] = useState([])
 
-    const getLugares = async () => {
+    const getPromociones = async () => {
         try {
-            const response = await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/lugares');
+            const response = await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/promociones');
             const json = await response.json();
             setData(json);
         } catch (error) {
@@ -20,7 +20,7 @@ const ReadLugares = ({ navigation }) => {
     }
 
     useEffect(() => {
-        getLugares()
+        getPromociones()
     }, []);
 
     return (
@@ -29,24 +29,24 @@ const ReadLugares = ({ navigation }) => {
                 (data.length == 0) ?
                     (
                         <View>
-                            <Button title='Agregar' color='blue' onPress={() => navigation.navigate('CreateLugares', { funcion: getLugares })} />
-                            <Text>No hay lugares que mostrar</Text>
+                            <Button title='Agregar' color='blue' onPress={() => navigation.navigate('CreatePromociones', { funcion: getPromociones })} />
+                            <Text>No hay promociones que mostrar</Text>
                         </View>
                     ) : (
                         <View>
-                            <Button title='Agregar' color='blue' onPress={() => navigation.navigate('CreateLugares', { funcion: getLugares })} />
+                            <Button title='Agregar' color='blue' onPress={() => navigation.navigate('CreatePromociones', { funcion: getPromociones })} />
                             <FlatList
-                                key={'listaLugares'}
+                                key={'listaPromociones'}
                                 numColumns={2}
                                 data={data}
                                 keyExtractor={(item, index) => item._id}
                                 renderItem={({ item }) => (
                                     <View style={styles.card}>
                                         <Pressable
-                                            onPress={() => navigation.navigate('EditLugares', { lugar: item, funcion: getLugares })}>
-                                            <Image source={{ uri: item.imagenPerfil }} style={{ height: 200, width: '100%' }} />
+                                            onPress={() => navigation.navigate('EditPromociones', { promocion: item, funcion: getPromociones })}>
+                                            <Image source={{ uri: item.imagen }} style={{ height: 200, width: '100%' }} />
                                         </Pressable>
-                                        <Text>{item.titulo}</Text>
+                                        <Text>{item.lugarID.titulo}</Text>
                                     </View>
                                 )}
                             />
@@ -56,7 +56,7 @@ const ReadLugares = ({ navigation }) => {
     )
 }
 
-export default ReadLugares
+export default ReadPromociones
 
 const styles = StyleSheet.create({
     card: {

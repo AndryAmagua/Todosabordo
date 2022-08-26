@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, View, Modal, TextInput, StyleSheet, Image, Alert, Button } from 'react-native';
+import { ScrollView, Text, View, Modal, TextInput, StyleSheet, Image, Alert, Button, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'react-native-image-picker'
 import DatePicker from 'react-native-date-picker'
 import { Picker } from '@react-native-picker/picker'
@@ -20,6 +20,7 @@ const EditEventos = ({ navigation: { goBack }, route }) => {
 
     const [id, setId] = useState(route.params.evento._id)
     const [imagen, setImagen] = useState(route.params.evento.imagen)
+    const [newImage, setNewImage] = useState(false)
     const [dataLugares, setDataLugares] = useState([])
     const [date, setDate] = useState(route.params.evento.fecha)
     const [modalVisible, setModalVisible] = useState(false)
@@ -36,47 +37,65 @@ const EditEventos = ({ navigation: { goBack }, route }) => {
     }
 
     const editarEvento = async (nuevoTitulo, nuevoLugarID,) => {
-        const data = new FormData();
-        var url = ""
-        data.append('file', photo)
-        data.append('upload_preset', 'todosabordo')
-        data.append("cloud_name", "todosabordo")
-        const res = await fetch("https://api.cloudinary.com/v1_1/todosabordo/upload", {
-            method: "post",
-            body: data
-        })
-        const value = await res.json()
-        url = value.secure_url
+        try {
+            setModalVisible(true)
+            if (newImage == true) {
+                const data = new FormData();
+                var url = ""
+                data.append('file', photo)
+                data.append('upload_preset', 'todosabordo')
+                data.append("cloud_name", "todosabordo")
+                const res = await fetch("https://api.cloudinary.com/v1_1/todosabordo/upload", {
+                    method: "post",
+                    body: data
+                })
+                const value = await res.json()
+                url = value.secure_url
+            }
 
-        await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/eventos/' + id, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                titulo: nuevoTitulo,
-                imagen: url,
-                fecha: date,
-                lugarID: nuevoLugarID,
+            await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/eventos/' + id, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    titulo: nuevoTitulo,
+                    imagen: url || imagen,
+                    fecha: date,
+                    lugarID: nuevoLugarID,
+                })
+            }).then(() => {
+                Alert.alert("Titulo", "Evento Editado")
+                route.params.funcion()
+                goBack()
             })
-        }).then(() => {
-            Alert.alert("Titulo", "Evento Editado")
-            route.params.funcion()
-            goBack()
-        })
+        } catch (error) {
+            Alert.alert("Error", error.message)
+        } finally {
+            setModalVisible(false)
+            setNewImage(false)
+        }
     }
 
     const eliminarEvento = async () => {
-        fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/eventos/' + id, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        }).then(() => {
-            Alert.alert("Aviso", "Evento Eliminado")
-            route.params.funcion()
-            navigation.navigate("ReadEventos")
-        })
+        try {
+            setModalVisible(true)
+            await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/eventos/' + id, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }).then(() => {
+                Alert.alert("Aviso", "Evento Eliminado")
+                route.params.funcion()
+                goBack()
+            })
+        } catch (error) {
+            Alert.alert("Error", error.message)
+        } finally {
+            setModalVisible(false)
+        }
+
     }
 
     function mostrarFecha() {
@@ -86,14 +105,6 @@ const EditEventos = ({ navigation: { goBack }, route }) => {
         } else {
             return <Text>Aqui va la fecha</Text>
         }
-    }
-
-    function cancelar() {
-        setModalVisible(false);
-    }
-    function confirmar() {
-        eliminarEvento();
-        setModalVisible(false);
     }
 
     const launchCamera = () => {
@@ -121,6 +132,7 @@ const EditEventos = ({ navigation: { goBack }, route }) => {
                 }
                 setPhoto(source)
                 setImagen(uri)
+                setNewImage(true)
             }
         });
     }
@@ -150,6 +162,7 @@ const EditEventos = ({ navigation: { goBack }, route }) => {
                 }
                 setPhoto(source)
                 setImagen(uri)
+                setNewImage(true)
             }
         });
 
@@ -176,23 +189,36 @@ const EditEventos = ({ navigation: { goBack }, route }) => {
     return (
         <View>
             <Modal
-                animationType="slide"
-                transparent={false}
+                animationType='fade'
+                transparent={true}
                 visible={modalVisible}
-                onRequestClose={() => {
-                    setModalVisible(false);
-                }}
+            // onRequestClose={() => {
+            //     setModalVisible(false);
+            // }}
             >
-                <Text>Esta seguro que desea eliminar este evento</Text>
-                <Button title='Si' color='blue' onPress={confirmar} />
-                <Button title='No' color='blue' onPress={cancelar} />
+                <View style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: '#00000099'
+                }}>
+                    <View style={{
+                        backgroundColor: "white",
+                        borderRadius: 20,
+                        padding: 35,
+                        alignItems: "center"
+                    }}>
+                        <ActivityIndicator size="large" color="#005CA8" />
+                        <Text>CARGANDO...</Text>
+                    </View>
+                </View>
             </Modal>
             <ScrollView>
-                <Button title='Regresar' color='grey' onPress={() => navigation.navigate("ReadEventos")} />
+                <Button title='Regresar' color='grey' onPress={() => goBack()} />
                 <Formik
                     initialValues={{
                         titulo: route.params.evento.titulo,
-                        lugarID: route.params.evento.lugarID,
+                        lugarID: route.params.evento.lugarID._id,
                     }}
                     validationSchema={validationSchema}
                     onSubmit={(values) => {
@@ -252,7 +278,21 @@ const EditEventos = ({ navigation: { goBack }, route }) => {
                         </View>
                     )}
                 </Formik>
-                <Button title='Eliminar' color='red' onPress={() => setModalVisible(true)} />
+                <Button title='Eliminar' color='red' onPress={() => {
+                    Alert.alert(
+                        "Atencion",
+                        "¿Esta seguro de eliminar este evento?",
+                        [
+                            {
+                                text: "Cancelar",
+                                onPress: () => console.log("Cancel Pressed"),
+                                style: "cancel"
+                            },
+                            { text: "OK", onPress: () => eliminarEvento() }
+                        ]
+                    )
+                }
+                } />
             </ScrollView>
         </View>
     )

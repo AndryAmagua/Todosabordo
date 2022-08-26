@@ -1,28 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, TextInput, StyleSheet, Image, Alert, Button, Modal, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'react-native-image-picker'
-import DatePicker from 'react-native-date-picker'
 import { Picker } from '@react-native-picker/picker'
 import { LogBox } from 'react-native'
-import { FastField, Formik } from 'formik'
+import { Formik } from 'formik'
 import * as yup from 'yup'
 LogBox.ignoreAllLogs()
 
 const validationSchema = yup.object({
-    titulo: yup.string()
-        .required("Titulo de evento obligatorio"),
     lugarID: yup.string()
         .required("Seleccione el lugar al que pertenece el evento")
         .notOneOf(["default"], "Opción no valida")
 })
 
 const CreateEventos = ({ navigation: { goBack }, route }) => {
-    const getEventos = route.params.funcion
+    const getPromociones = route.params.funcion
     const [photo, setPhoto] = useState()
     const [dataLugares, setDataLugares] = useState([])
     const [modalVisible, setModalVisible] = useState(false)
-    const [date, setDate] = useState(new Date())
-    const [openDate, setOpenDate] = useState(false)
     const [imagen, setImagen] = useState()
 
     const launchCamera = () => {
@@ -106,15 +101,7 @@ const CreateEventos = ({ navigation: { goBack }, route }) => {
         }
     }
 
-    function mostrarFecha() {
-        if (date != '') {
-            return <Text>{date.toLocaleDateString() + " - " + date.toLocaleTimeString()}</Text>
-        } else {
-            return <Text>Aqui va la fecha</Text>
-        }
-    }
-
-    const createEvento = async (titulo, lugarID) => {
+    const createPromocion = async (titulo, lugarID) => {
         try {
             setModalVisible(true)
             const data = new FormData();
@@ -129,23 +116,21 @@ const CreateEventos = ({ navigation: { goBack }, route }) => {
             const value = await res.json()
             url = value.secure_url
 
-            const response = await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/eventos', {
+            const response = await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/promociones', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    titulo: titulo,
                     imagen: url,
-                    fecha: date,
                     lugarID: lugarID
                 })
             });
             const json = await response.json();
             Alert.alert("Ok", json.message)
             setImagen('')
-            getEventos()
+            getPromociones()
             goBack()
         } catch (error) {
             Alert.alert("Error", error.message)
@@ -186,26 +171,19 @@ const CreateEventos = ({ navigation: { goBack }, route }) => {
                 </View>
             </Modal>
             <Formik
-                initialValues={{ titulo: '', lugarID: '' }}
+                initialValues={{ lugarID: '' }}
                 validationSchema={validationSchema}
                 onSubmit={(values) => {
                     if (imagen == '') {
                         Alert.alert("Aviso", "Imagen no seleccionada")
                     } else {
-                        createEvento(values.titulo, values.lugarID)
+                        createPromocion(values.lugarID)
                     }
                 }}
             >
                 {(props) => (
                     <View>
                         <Button title='Guardar' color='blue' onPress={props.handleSubmit} />
-                        <TextInput
-                            placeholder='Titulo'
-                            onChangeText={props.handleChange('titulo')}
-                            value={props.values.titulo}
-                            onBlur={props.handleBlur('titulo')}
-                        />
-                        <Text>{props.touched.titulo && props.errors.titulo}</Text>
                         {/* -----------> Imagen */}
                         <Text >Imagen de Portada</Text>
                         <View>
@@ -218,22 +196,6 @@ const CreateEventos = ({ navigation: { goBack }, route }) => {
                             <Button title='Abrir Galeria' color='blue' onPress={launchImageLibrary} />
                         </View>
                         {/* -----------> Imagen */}
-
-                        {mostrarFecha()}
-                        <Button title="Dia" onPress={() => setOpenDate(true)} />
-                        <DatePicker
-                            modal
-                            open={openDate}
-                            date={new Date()}
-                            mode={"datetime"}
-                            onConfirm={(date) => {
-                                setOpenDate(false)
-                                setDate(date)
-                            }}
-                            onCancel={() => {
-                                setOpenDate(false)
-                            }}
-                        />
                         <Picker
                             selectedValue={props.values.lugarID}
                             onValueChange={props.handleChange('lugarID')}

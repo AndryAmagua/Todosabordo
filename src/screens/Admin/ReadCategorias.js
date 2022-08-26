@@ -43,11 +43,12 @@ const ReadCategorias = ({ navigation }) => {
                                         borderWidth: 1,
                                         padding: 10,
                                         borderRadius: 5,
-                                        marginVertical: 10
+                                        marginVertical: 10,
+                                        marginHorizontal: 55
                                     }}>
                                         <Pressable
                                             onPress={() => navigation.navigate('EditCategorias', { categoria: item, funcion: getCategorias })}>
-                                            <Text>{item.nombre}</Text>
+                                            <Text style={{ textAlign: 'center' }}>{item.nombre}</Text>
                                         </Pressable>
                                     </View>
                                 )}

@@ -1,37 +1,38 @@
-import {
-    View, Text, TextInput, FlatList, Alert, Button, Image, StyleSheet,
-    LogBox, ScrollView, Modal, ActivityIndicator
-} from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react';
+import { ScrollView, Text, View, Modal, TextInput, StyleSheet, Image, Alert, Button, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'react-native-image-picker'
+import DatePicker from 'react-native-date-picker'
+import { Picker } from '@react-native-picker/picker'
+import { LogBox } from 'react-native'
 import { Formik } from 'formik'
 import * as yup from 'yup'
 LogBox.ignoreAllLogs()
 
 const validationSchema = yup.object({
-    titulo: yup.string()
-        .required("Titulo de lugar obligatorio"),
-    descripcion: yup.string()
-        .required("Descripción de lugar obligatoria"),
-    ubicacionTitulo: yup.string()
-        .required("Titulo de dirección obligatorio"),
-    ubicacionLink: yup.string()
-        .required("Link de dirección obligatorio"),
-    contacto: yup.string()
-        .max(10, "Maximo 10 números")
-        .required("Número de contacto obligatorio")
+    lugarID: yup.string()
+        .required("Seleccione el lugar al que pertenece el evento")
 })
 
-const EditLugares = ({ navigation: { goBack }, route }) => {
+const EditPromociones = ({ navigation: { goBack }, route }) => {
     const [photo, setPhoto] = useState()
 
-    const [id, setId] = useState(route.params.lugar._id)
-    const [imagen, setImagen] = useState(route.params.lugar.imagenPerfil)
+    const [id, setId] = useState(route.params.promocion._id)
+    const [imagen, setImagen] = useState(route.params.promocion.imagen)
     const [newImage, setNewImage] = useState(false)
-    const [servicio, setServicio] = useState(route.params.lugar.servicio)
+    const [dataLugares, setDataLugares] = useState([])
     const [modalVisible, setModalVisible] = useState(false)
 
-    const editarLugar = async (nuevoTitulo, nuevaDescripcion, nuevaUbicacionTitulo, nuevaUbicacionLink, nuevoContacto) => {
+    const getLugares = async () => {
+        try {
+            const response = await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/lugares');
+            const json = await response.json();
+            setDataLugares(json);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const editarPromocion = async (nuevoLugarID) => {
         try {
             setModalVisible(true)
             if (newImage == true) {
@@ -48,22 +49,17 @@ const EditLugares = ({ navigation: { goBack }, route }) => {
                 url = value.secure_url
             }
 
-            await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/lugares/' + id, {
+            await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/promociones/' + id, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    titulo: nuevoTitulo,
-                    descripcion: nuevaDescripcion,
-                    imagenPerfil: url || imagen,
-                    ubicacionTitulo: nuevaUbicacionTitulo,
-                    ubicacionLink: nuevaUbicacionLink,
-                    contacto: nuevoContacto,
-                    servicio: servicio,
+                    imagen: url || imagen,
+                    lugarID: nuevoLugarID
                 })
             }).then(() => {
-                Alert.alert("Titulo", "Lugar Editado")
+                Alert.alert("Titulo", "Promocion editada")
                 route.params.funcion()
                 goBack()
             })
@@ -75,16 +71,16 @@ const EditLugares = ({ navigation: { goBack }, route }) => {
         }
     }
 
-    const eliminarLugar = async () => {
+    const eliminarPromocion = async () => {
         try {
             setModalVisible(true)
-            await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/lugares/' + id, {
+            await fetch('https://tabapi-andryamagua5-gmailcom.vercel.app/promociones/' + id, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
                 }
             }).then(() => {
-                Alert.alert("Aviso", "Lugar Eliminado")
+                Alert.alert("Aviso", "Promocion eliminada")
                 route.params.funcion()
                 goBack()
             })
@@ -154,8 +150,24 @@ const EditLugares = ({ navigation: { goBack }, route }) => {
                 setNewImage(true)
             }
         });
-
     }
+
+    function renderFileUri() {
+        if (imagen) {
+            return <Image
+                source={{ uri: imagen }}
+                style={styles.images}
+            />
+        } else {
+            return <Image source={{ uri: 'https://pbs.twimg.com/profile_images/486929358120964097/gNLINY67_400x400.png' }}
+                style={styles.images}
+            />
+        }
+    }
+
+    useEffect(() => {
+        getLugares()
+    }, []);
 
     return (
         <View>
@@ -188,85 +200,40 @@ const EditLugares = ({ navigation: { goBack }, route }) => {
                 <Button title='Regresar' color='grey' onPress={() => goBack()} />
                 <Formik
                     initialValues={{
-                        titulo: route.params.lugar.titulo,
-                        descripcion: route.params.lugar.descripcion,
-                        ubicacionTitulo: route.params.lugar.ubicacionTitulo,
-                        ubicacionLink: route.params.lugar.ubicacionLink,
-                        contacto: route.params.lugar.contacto,
+                        lugarID: route.params.promocion.lugarID._id,
                     }}
                     validationSchema={validationSchema}
                     onSubmit={(values) => {
-                        editarLugar(values.titulo, values.descripcion, values.ubicacionTitulo, values.ubicacionLink, values.contacto)
+                        editarPromocion(values.lugarID)
                     }}
                 >
                     {(props) => (
                         <View>
-                            <TextInput
-                                placeholder='Titulo'
-                                onChangeText={props.handleChange('titulo')}
-                                value={props.values.titulo}
-                                onBlur={props.handleBlur('titulo')}
-                            />
-                            <Text>{props.touched.titulo && props.errors.titulo}</Text>
-                            <TextInput
-                                placeholder='Descripción'
-                                onChangeText={props.handleChange('descripcion')}
-                                value={props.values.descripcion}
-                                onBlur={props.handleBlur('descripcion')}
-                            />
-                            <Text>{props.touched.descripcion && props.errors.descripcion}</Text>
                             {/* -----------> Imagen */}
                             <Text >Imagen de Portada</Text>
                             <View>
-                                <Image
-                                    source={{ uri: imagen }}
-                                    style={styles.images}
-                                />
+                                <View>
+                                    {renderFileUri()}
+                                </View>
                             </View>
                             <View>
                                 <Button title='Abrir Camara' color='blue' onPress={launchCamera} />
                                 <Button title='Abrir Galeria' color='blue' onPress={launchImageLibrary} />
                             </View>
                             {/* -----------> Imagen */}
-                            <TextInput
-                                placeholder='Ubicación titulo'
-                                onChangeText={props.handleChange('ubicacionTitulo')}
-                                value={props.values.ubicacionTitulo}
-                                onBlur={props.handleBlur('ubicacionTitulo')}
-                            />
-                            <Text>{props.touched.ubicacionTitulo && props.errors.ubicacionTitulo}</Text>
-                            <TextInput
-                                placeholder='Ubicación link'
-                                onChangeText={props.handleChange('ubicacionLink')}
-                                value={props.values.ubicacionLink}
-                                onBlur={props.handleBlur('ubicacionLink')}
-                            />
-                            <Text>{props.touched.ubicacionLink && props.errors.ubicacionLink}</Text>
-                            <TextInput
-                                placeholder='Contacto'
-                                keyboardType='numeric'
-                                onChangeText={props.handleChange('contacto')}
-                                value={props.values.contacto}
-                                onBlur={props.handleBlur('contacto')}
-                            />
-                            <Text>{props.touched.contacto && props.errors.contacto}</Text>
-                            <FlatList
-                                data={servicio}
-                                horizontal={true}
-                                keyExtractor={(item, index) => item._id}
-                                renderItem={({ item }) => (
-                                    <View style={{
-                                        backgroundColor: "beige",
-                                        borderWidth: 1,
-                                        padding: 10,
-                                        borderRadius: 5,
-                                        marginVertical: 10,
-                                        flex: 1
-                                    }}>
-                                        <Text>{item}</Text>
-                                    </View>
-                                )}
-                            />
+
+                            <Picker
+                                selectedValue={props.values.lugarID}
+                                onValueChange={props.handleChange('lugarID')}
+                                onBlur={props.handleBlur('lugarID')}
+                            >
+                                {
+                                    dataLugares.map((item) => {
+                                        return <Picker.Item label={item.titulo} value={item._id} />
+                                    })
+                                }
+                            </Picker>
+                            <Text>{props.touched.lugarID && props.errors.lugarID}</Text>
                             <Button title='Editar' color='blue' onPress={props.handleSubmit} />
                         </View>
                     )}
@@ -274,14 +241,14 @@ const EditLugares = ({ navigation: { goBack }, route }) => {
                 <Button title='Eliminar' color='red' onPress={() => {
                     Alert.alert(
                         "Atencion",
-                        "¿Esta seguro de eliminar este lugar?",
+                        "¿Esta seguro de eliminar esta promoción?",
                         [
                             {
                                 text: "Cancelar",
                                 onPress: () => console.log("Cancel Pressed"),
                                 style: "cancel"
                             },
-                            { text: "OK", onPress: () => eliminarLugar() }
+                            { text: "OK", onPress: () => eliminarPromocion() }
                         ]
                     )
                 }
@@ -291,7 +258,7 @@ const EditLugares = ({ navigation: { goBack }, route }) => {
     )
 }
 
-export default EditLugares
+export default EditPromociones
 
 const styles = StyleSheet.create({
     images: {

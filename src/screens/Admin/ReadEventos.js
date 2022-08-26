@@ -47,6 +47,7 @@ const Eventos = ({ navigation }) => {
                       onPress={() => navigation.navigate('EditEventos', { evento: item, funcion: getEventos })}>
                       <Image source={{ uri: item.imagen }} style={{ height: 200, width: '100%' }} />
                     </Pressable>
+                    <Text>{item.lugarID.titulo}</Text>
                     <Text>{item.titulo}</Text>
                     <Text>{new Date(item.fecha).toLocaleDateString()}</Text>
                   </View>
@@ -67,12 +68,5 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     padding: 20
-  },
-  images: {
-    width: 150,
-    height: 150,
-    borderColor: 'black',
-    borderWidth: 1,
-    marginHorizontal: 3,
   }
 });
